@@ -1,7 +1,8 @@
 ---
 import { ArrowUpRight, Briefcase, Layers, Users } from '@lucide/astro';
 import Section from '../Section.astro';
-import { getPlaces, getProfile } from '../../lib/content';
+import { getPlaces, getProfile, getRunning } from '../../lib/content';
+import { marathonCount } from '../../lib/running';
 import { quickFacts } from '../../lib/about';
 import Languages from '../Languages.astro';
 import QuickFacts from '../QuickFacts.astro';
@@ -12,7 +13,7 @@ const profile = await getProfile();
 const places = await getPlaces();
 const facts = quickFacts({
   yearsInFinance: profile.yearsInFinance,
-  marathons: profile.marathons,
+  marathons: marathonCount((await getRunning()).races),
   cities: places.length,
   languages: profile.languages.length,
 });

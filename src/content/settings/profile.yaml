@@ -28,7 +28,6 @@ languages:
   - language: Filipino
     level: conversational
 yearsInFinance: 12
-marathons: 5
 principles:
   - title: Find the problem first
     text: Most of the work is understanding what's really broken before deciding what to build.

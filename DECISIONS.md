@@ -2,6 +2,17 @@
 
 Newest first. One line of why each.
 
+## 2026-11-09 — Running results and site settings in the admin
+
+- **Races and the Majors are edited under "Running" in /keystatic** (`settings/running.yaml`),
+  not in code. Personal bests per distance, the latest race and the marathon count in About are
+  worked out from the race list, so one new race updates all three. Finish times are checked
+  (h:mm:ss) and the build stops with a message naming the race if one is wrong. Results are typed
+  in by hand, as before: no run data from Strava.
+- **The "Preview · sample content" pill is a switch** under "Site settings" in the admin, on until
+  Jeymarc turns it off.
+- **Custom 404 page** in the site's style.
+
 ## 2026-11-08 — About: facts, principles, languages, beyond work
 
 - **About shows what LinkedIn doesn't** (Jeymarc): no career timeline (LinkedIn has it; two

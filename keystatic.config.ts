@@ -4,6 +4,7 @@ import { config, collection, singleton, fields } from '@keystatic/core';
 import countries from './src/data/countries.json';
 import { LEVELS } from './src/lib/languages';
 import { BEYOND_ICONS } from './src/lib/about';
+import { DISTANCES } from './src/lib/running';
 
 // Images live under src/assets so Astro optimises them (and strips metadata from what it serves).
 // publicPath is relative to the content file, so Astro's image() schema can resolve it.
@@ -18,7 +19,7 @@ export default config({
 
   ui: {
     brand: { name: 'Jeymarc Sison' },
-    navigation: { Writing: ['posts'], 'Home page': ['now', 'profile', 'places'] },
+    navigation: { Writing: ['posts'], 'Home page': ['now', 'profile', 'running', 'places', 'site'] },
   },
 
   collections: {
@@ -84,6 +85,65 @@ export default config({
         updated: fields.date({ label: 'Last updated', defaultValue: { kind: 'today' }, validation: { isRequired: true } }),
       },
     }),
+    running: singleton({
+      label: 'Running',
+      path: 'src/content/settings/running',
+      format: 'yaml',
+      schema: {
+        races: fields.array(
+          fields.object({
+            name: fields.text({ label: 'Race', description: 'e.g. Chicago Marathon', validation: { length: { min: 1, max: 80 } } }),
+            place: fields.text({ label: 'City', description: 'Shown with personal bests, e.g. “Marathon PB · Chicago 2026”.', validation: { length: { min: 1, max: 40 } } }),
+            date: fields.date({ label: 'Race day', validation: { isRequired: true } }),
+            distance: fields.select({
+              label: 'Distance',
+              options: Object.entries(DISTANCES).map(([value, d]) => ({ value, label: d.label })),
+              defaultValue: 'marathon',
+            }),
+            time: fields.text({
+              label: 'Finish time',
+              description: 'h:mm:ss or mm:ss, e.g. 3:30:20',
+              validation: { length: { min: 4, max: 8 }, pattern: { regex: /^\d{1,2}(:[0-5]\d){1,2}$/, message: 'Use h:mm:ss or mm:ss, e.g. 3:30:20' } },
+            }),
+            note: fields.text({ label: 'Note (optional)', description: 'Shown for the latest race, e.g. “New marathon personal best.”', validation: { length: { max: 120 } } }),
+          }),
+          {
+            label: 'Races',
+            description: 'Personal bests, the latest race and the marathon count are worked out from this list. Only add races that are done.',
+            itemLabel: (p) => `${p.fields.name.value || 'Race'} ${p.fields.date.value?.slice(0, 4) ?? ''} · ${p.fields.time.value}`,
+          },
+        ),
+        majors: fields.array(
+          fields.object({
+            city: fields.text({ label: 'City', validation: { length: { min: 1, max: 40 } } }),
+            flag: fields.text({ label: 'Flag emoji', validation: { length: { min: 1, max: 8 } } }),
+            status: fields.select({
+              label: 'Status',
+              options: [
+                { value: 'done', label: 'Done' },
+                { value: 'planned', label: 'Planned' },
+                { value: 'open', label: 'Someday' },
+              ],
+              defaultValue: 'open',
+            }),
+            when: fields.text({ label: 'Year(s) (optional)', description: 'e.g. “2014 · 2025”. For planned races, a public race date tells people where you’ll be.', validation: { length: { max: 40 } } }),
+          }),
+          { label: 'World Marathon Majors', itemLabel: (p) => `${p.fields.city.value || 'Major'}: ${p.fields.status.value}` },
+        ),
+      },
+    }),
+    site: singleton({
+      label: 'Site settings',
+      path: 'src/content/settings/site',
+      format: 'yaml',
+      schema: {
+        showSamplePill: fields.checkbox({
+          label: 'Show the “Preview · sample content” pill',
+          description: 'Turn off once the placeholders (about texts, interests, projects) are replaced with your own.',
+          defaultValue: true,
+        }),
+      },
+    }),
     places: singleton({
       label: 'Places',
       path: 'src/content/settings/places',
@@ -144,10 +204,9 @@ export default config({
         ),
         yearsInFinance: fields.integer({
           label: 'Quick facts: years in finance',
-          description: 'Leave empty to hide. Cities and languages are counted automatically.',
+          description: 'Leave empty to hide. Marathons, cities and languages are counted automatically.',
           validation: { min: 0, max: 60 },
         }),
-        marathons: fields.integer({ label: 'Quick facts: marathons run', description: 'Leave empty to hide.', validation: { min: 0, max: 500 } }),
         principles: fields.array(
           fields.object({
             title: fields.text({ label: 'Principle', description: 'Short, e.g. “Find the problem first”.', validation: { length: { min: 1, max: 60 } } }),

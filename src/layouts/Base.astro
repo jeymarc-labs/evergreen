@@ -5,7 +5,7 @@ import '../styles/tokens.css';
 import '../styles/motion.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import { SAMPLE_CONTENT } from '../data/sample';
+import { getSite } from '../lib/content';
 
 interface Props {
   title?: string;
@@ -24,6 +24,7 @@ const {
   type = 'website',
 } = Astro.props;
 
+const { showSamplePill } = await getSite();
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const shareImage = image
   ? new URL((await getImage({ src: image, width: 1200, height: 630, fit: 'cover', format: 'jpg' })).src, Astro.site)
@@ -86,7 +87,7 @@ const shareImage = image
     </main>
     <SiteFooter />
     {
-      SAMPLE_CONTENT && (
+      showSamplePill && (
         <p class="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 rounded-full bg-ink px-4 py-1.5 text-xs font-medium text-surface shadow-lg">
           Preview · sample content
         </p>

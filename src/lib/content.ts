@@ -6,6 +6,7 @@ import keystaticConfig from '../../keystatic.config';
 import { visiblePosts, readingMinutes } from './blog';
 import { isSafeHref } from './links';
 import { languageRows } from './languages';
+import { timeToSeconds, type Distance, type MajorStatus, type Race } from './running';
 import { mergeNearby, resolvePlace, type CityLookup, type Place } from './places';
 import cityLookup from '../data/world-cities.json';
 
@@ -56,4 +57,19 @@ async function readPlaces(): Promise<Place[]> {
   const { kept, merged } = mergeNearby(resolved);
   for (const m of merged) console.info(`Places: "${m.dropped}" is shown as "${m.into}" (same area, bigger city).`);
   return kept;
+}
+
+export async function getRunning() {
+  const data = await reader.singletons.running.read();
+  if (!data) throw new Error('Missing src/content/settings/running.yaml (edit "Running" in /keystatic)');
+  const races: Race[] = data.races.map((r) => ({ ...r, date: String(r.date), distance: r.distance as Distance, note: r.note ?? '' }));
+  for (const r of races) {
+    if (timeToSeconds(r.time) === null) throw new Error(`Running: "${r.name}" has a finish time that isn't h:mm:ss (${r.time}).`);
+  }
+  return { races, majors: data.majors.map((m) => ({ ...m, status: m.status as MajorStatus, when: m.when ?? '' })) };
+}
+
+export async function getSite() {
+  const site = await reader.singletons.site.read();
+  return { showSamplePill: site?.showSamplePill ?? true };
 }

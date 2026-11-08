@@ -12,14 +12,14 @@ Brief: `BRIEF.md`. Phases: `ROADMAP.md`. Why: `DECISIONS.md`.
 | `src/pages/api/contact.ts` | The only server route (Vercel function) |
 | `tests/` | Unit tests (`node --test`, run by `check.sh`) |
 | `src/content.config.ts` | Typed content models (posts) |
-| `keystatic.config.ts` | Admin: posts, Now, Profile |
-| `src/content/` | Posts (`posts/*.mdoc`) and settings (`settings/now.yaml`, `profile.yaml`, `places.yaml`) |
+| `keystatic.config.ts` | Admin: posts, Now, Profile, Running, Places, Site settings |
+| `src/content/` | Posts (`posts/*.mdoc`) and settings (`settings/now.yaml`, `profile.yaml`, `running.yaml`, `places.yaml`, `site.yaml`) |
 | `src/lib/places.ts`, `src/components/WorldMap.astro`, `TravelMap.astro` | Travel map: projection, pins, interactive /travel |
 | `src/assets/posts/` | Post photos |
 | `scripts/clean_images.mjs` | Photo metadata/size check and fix (also run by `.github/workflows/images.yml`) |
 | `src/styles/tokens.css` | Design tokens (colours, type, motion) |
 | `src/components/sections/` | One component per landing-page section |
-| `src/data/sample.ts` | Mockup sample content (placeholders, not facts) |
+| `src/data/sample.ts` | Placeholder interest tiles (the last sample content in code) |
 | `scripts/check.sh` | All deterministic checks in one command |
 | `.claude/agents/` | Keystone (review), Shield (privacy/licensing) |
 | `.claude/skills/apple-design/` | Apple-style motion and design guidance (MIT) |
@@ -40,7 +40,7 @@ Brief: `BRIEF.md`. Phases: `ROADMAP.md`. Why: `DECISIONS.md`.
     the email arrived. Env vars set in Vercel (secrets marked Sensitive; site key plain).
     Turnstile rejects the in-app automated browser (error 600010), so live form tests must be
     done by Jeymarc in a normal browser.
-  - All content is still sample (`SAMPLE_CONTENT = true` shows a pill).
+  - The sample pill is a switch under "Site settings" in the admin (still on).
 - **Phase 2 live (2026-11-08, commit f23d03d):** Keystatic admin, blog list, post pages with
   series navigation, RSS (`/rss.xml`), share images from cover photos, landing page reads Now,
   Profile and the latest posts from `src/content/`. Two sample posts. Photo clean-up Action and
@@ -51,9 +51,12 @@ Brief: `BRIEF.md`. Phases: `ROADMAP.md`. Why: `DECISIONS.md`.
     Jeymarc's first sign-in and a test save from the live admin are not yet verified.
   - Photo Action ran on the Phase 2 push: success, nothing to clean.
   - `scripts/check.sh` passes (18 unit tests, 8 pages).
-- **Travel map built locally (2026-11-08), not pushed:** 30 cities in 9 countries, static map on
+- **Travel map and motion live (2026-11-08, commits 753c690, 37d4a9d):** 30 cities in 9 countries, static map on
   the home page, interactive map on `/travel`, editable under "Places" in the admin (city +
   country; coordinates looked up at build time).
+- **Branch `overnight` (2026-11-09), local, not pushed:** About additions (quick facts,
+  how I work, beyond work, language pills); running results and Majors editable in the admin
+  (PBs, latest race and marathon count worked out from the races); sample-pill switch; 404 page.
 - GitHub: `jeymarc-labs/evergreen` (public), `main` pushed 2026-11-08. This repo commits as
   `Jeymarc Sison <jeymarc.labs@gmail.com>` (local git config) so Vercel Hobby accepts the
   deploys.
@@ -67,7 +70,7 @@ Brief: `BRIEF.md`. Phases: `ROADMAP.md`. Why: `DECISIONS.md`.
 - First sign-in at /keystatic on the live site, and one test save (then check it deploys).
 - Register the domain (.ch or .com); then change `site` in astro.config.mjs.
 - Switch on Web Analytics in the Vercel dashboard.
-- Portrait photo; race results; Majors done/planned; trip list.
+- Portrait photo; years in finance, principles, beyond-work and interest texts (drafts now).
 - Optionally: switch jeymarc.logs Instagram to a creator account.
 
 ## Accounts
