@@ -31,7 +31,14 @@ Brief: `BRIEF.md`. Phases: `ROADMAP.md`. Why: `DECISIONS.md`.
   Now, About, Interests, Running, Travel, Projects, Blog, links, contact), phone menu, theme
   toggle, privacy notice, favicon, stub pages /running /travel /projects /blog.
   - Contact form works end to end in dev with Cloudflare's test keys: validation, honeypot,
-    Turnstile, success state. Not yet tested against real Resend (needs Jeymarc's keys).
+    Turnstile, success state.
+  - **Live contact form confirmed 2026-11-08:** Jeymarc sent a message from his own browser and
+    the email arrived. Env vars set in Vercel (secrets marked Sensitive; site key plain).
+    Turnstile rejects the in-app automated browser (error 600010), so live form tests must be
+    done by Jeymarc in a normal browser.
+  - Unreviewed: `src/components/BrandIcon.astro` + brand icons on the profile links (Simple
+    Icons, CC0) appeared during the build, not written in this session, and went out in the
+    first commit. Needs Keystone, and Shield for brand-mark use.
   - All content is still sample (`SAMPLE_CONTENT = true` shows a pill).
   - `scripts/check.sh` passes (9 unit tests, 6 pages).
 - GitHub: `jeymarc-labs/evergreen` (public), `main` pushed 2026-11-08. This repo commits as
@@ -39,20 +46,19 @@ Brief: `BRIEF.md`. Phases: `ROADMAP.md`. Why: `DECISIONS.md`.
   deploys.
 - **Live on Vercel Hobby (team jeymarc-labs): https://evergreen-tan.vercel.app** (2026-11-08).
   Every push to `main` deploys. Checked live: all 6 pages 200, 404 works, HTTPS + HSTS,
-  analytics script present, `/api/contact` returns 503 until the env vars are set. Domain not
-  registered.
+  `/api/contact` working. Web Analytics not yet switched on in the dashboard (its script 404s).
+  Domain not registered.
 
 ## Waiting on Jeymarc
 
 - Register the domain (.ch or .com).
-- Contact form: Resend account + API key, Cloudflare Turnstile site (site key + secret), and
-  the recipient address, all as Vercel env vars (`.env.example` lists them). With the domain
-  verified in Resend, set CONTACT_FROM to an address on it.
 - Switch on Web Analytics in the Vercel dashboard.
 - Portrait photo; race results; Majors done/planned; trip list.
 - Optionally: switch jeymarc.logs Instagram to a creator account.
 
 ## Accounts
 
-GitHub CLI signed in as `jeymarclabs` (org `jeymarc-labs`). Vercel, Strava API app, Resend,
-Cloudflare (Turnstile): not set up yet.
+GitHub CLI signed in as `jeymarclabs` (org `jeymarc-labs`). Vercel Hobby team `jeymarc-labs`
+(project `evergreen`). Cloudflare Turnstile widget "Evergreen contact form" (managed mode,
+hostname evergreen-tan.vercel.app; add the domain when registered). Resend: sends from
+onboarding@resend.dev to the sign-up address until the domain is verified.
