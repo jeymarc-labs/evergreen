@@ -36,12 +36,15 @@ Brief: `BRIEF.md`. Phases: `ROADMAP.md`. Why: `DECISIONS.md`.
   - `scripts/check.sh` passes (9 unit tests, 6 pages).
 - GitHub: `jeymarc-labs/evergreen` (public), `main` pushed 2026-11-08. This repo commits as
   `Jeymarc Sison <jeymarc.labs@gmail.com>` (local git config) so Vercel Hobby accepts the
-  deploys. Nothing deployed yet. Domain not registered.
+  deploys.
+- **Live on Vercel Hobby (team jeymarc-labs): https://evergreen-tan.vercel.app** (2026-11-08).
+  Every push to `main` deploys. Checked live: all 6 pages 200, 404 works, HTTPS + HSTS,
+  analytics script present, `/api/contact` returns 503 until the env vars are set. Domain not
+  registered.
 
 ## Waiting on Jeymarc
 
 - Register the domain (.ch or .com).
-- Connect `jeymarc-labs/evergreen` to Vercel Hobby (signed in as `jeymarclabs`).
 - Contact form: Resend account + API key, Cloudflare Turnstile site (site key + secret), and
   the recipient address, all as Vercel env vars (`.env.example` lists them). With the domain
   verified in Resend, set CONTACT_FROM to an address on it.
