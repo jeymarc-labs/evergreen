@@ -2,6 +2,16 @@
 
 Newest first. One line of why each.
 
+## 2026-11-08 — About: facts, principles, languages, beyond work
+
+- **About shows what LinkedIn doesn't** (Jeymarc): no career timeline (LinkedIn has it; two
+  places to keep current). Instead: Quick facts (count up once; cities and languages counted
+  automatically), How I work, Languages and Beyond work, all editable under Profile in the admin.
+- **Languages in plain words, no CEFR codes** (Jeymarc): Native, Fluent, Conversational, Basic,
+  Learning, shown as a pill plus five dots that fill one by one as the block is seen.
+- Principles, Beyond work, years in finance and marathons are **drafts/placeholders** until
+  Jeymarc replaces them in the admin.
+
 ## 2026-11-08 — Motion helper on every page
 
 - **A small motion script runs on every page** (about 1.3 KB, from `Base.astro`): it reveals

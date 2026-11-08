@@ -1,0 +1,37 @@
+---
+// Languages in plain words: a level pill and five dots that fill one by one as the block is
+// seen (motion.css, .lang-dot / .lang-pill). The text says it all; the dots are decoration.
+import { MAX_STEP, type LanguageRow } from '../lib/languages';
+
+interface Props {
+  rows: LanguageRow[];
+}
+const { rows } = Astro.props;
+---
+
+<div class="reveal mt-16 rounded-3xl border border-line bg-card p-7 sm:p-10">
+  <h3 class="text-xl font-semibold tracking-tight">Languages</h3>
+  <ul class="mt-6 divide-y divide-line">
+    {
+      rows.map((r) => (
+        <li class="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-2 py-4 sm:grid-cols-[1fr_auto_auto] sm:gap-x-8">
+          <p class="text-lg font-semibold">{r.language}</p>
+          <span
+            class:list={[
+              'lang-pill justify-self-end rounded-full px-3.5 py-1 text-sm font-medium',
+              r.step === MAX_STEP ? 'bg-accent text-accent-ink' : 'bg-accent-soft text-accent',
+            ]}
+            style={`--d:${r.delay + r.step}`}
+          >
+            {r.name}
+          </span>
+          <span class="col-span-2 flex gap-1.5 sm:col-span-1" aria-hidden="true">
+            {Array.from({ length: MAX_STEP }, (_, j) => (
+              <span class:list={['lang-dot size-3 rounded-full', j < r.step ? 'on bg-accent' : 'bg-line']} style={`--d:${r.delay + j}`} />
+            ))}
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+</div>

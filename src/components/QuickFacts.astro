@@ -1,0 +1,26 @@
+---
+// A row of big numbers that count up once when seen (Base.astro count-up). Screen readers read
+// the final number from the sr-only copy, never the counting.
+import type { Fact } from '../lib/about';
+
+interface Props {
+  facts: Fact[];
+}
+const { facts } = Astro.props;
+---
+
+{
+  facts.length > 0 && (
+    <dl class="mt-16 grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4 stagger">
+      {facts.map((f) => (
+        <div class="reveal flex flex-col-reverse">
+          <dt class="mt-2 text-sm text-muted">{f.label}</dt>
+          <dd class="text-5xl font-semibold tabular-nums tracking-tight text-accent sm:text-6xl">
+            <span data-count aria-hidden="true">{f.value}</span>
+            <span class="sr-only">{f.value}</span>
+          </dd>
+        </div>
+      ))}
+    </dl>
+  )
+}

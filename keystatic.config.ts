@@ -2,6 +2,8 @@
 // and commits to GitHub as the signed-in user (jeymarclabs), which Vercel then deploys.
 import { config, collection, singleton, fields } from '@keystatic/core';
 import countries from './src/data/countries.json';
+import { LEVELS } from './src/lib/languages';
+import { BEYOND_ICONS } from './src/lib/about';
 
 // Images live under src/assets so Astro optimises them (and strips metadata from what it serves).
 // publicPath is relative to the content file, so Astro's image() schema can resolve it.
@@ -139,6 +141,46 @@ export default config({
             }),
           }),
           { label: 'Profile links', itemLabel: (props) => props.fields.label.value || 'Link' },
+        ),
+        yearsInFinance: fields.integer({
+          label: 'Quick facts: years in finance',
+          description: 'Leave empty to hide. Cities and languages are counted automatically.',
+          validation: { min: 0, max: 60 },
+        }),
+        marathons: fields.integer({ label: 'Quick facts: marathons run', description: 'Leave empty to hide.', validation: { min: 0, max: 500 } }),
+        principles: fields.array(
+          fields.object({
+            title: fields.text({ label: 'Principle', description: 'Short, e.g. “Find the problem first”.', validation: { length: { min: 1, max: 60 } } }),
+            text: fields.text({ label: 'One sentence', multiline: true, validation: { length: { min: 1, max: 180 } } }),
+          }),
+          { label: 'How I work', description: 'Three or four work best.', itemLabel: (p) => p.fields.title.value || 'Principle' },
+        ),
+        beyond: fields.array(
+          fields.object({
+            title: fields.text({ label: 'Title', validation: { length: { min: 1, max: 50 } } }),
+            text: fields.text({ label: 'One line', multiline: true, validation: { length: { min: 1, max: 140 } } }),
+            icon: fields.select({
+              label: 'Icon',
+              options: Object.entries(BEYOND_ICONS).map(([value, label]) => ({ value, label })),
+              defaultValue: 'heart',
+            }),
+          }),
+          { label: 'Beyond work', description: 'A few things that make you you.', itemLabel: (p) => p.fields.title.value || 'Item' },
+        ),
+        languages: fields.array(
+          fields.object({
+            language: fields.text({ label: 'Language', validation: { length: { min: 1, max: 40 } } }),
+            level: fields.select({
+              label: 'Level',
+              options: Object.entries(LEVELS).map(([value, l]) => ({ value, label: l.name })),
+              defaultValue: 'conversational',
+            }),
+          }),
+          {
+            label: 'Languages',
+            description: 'Shown in About, in this order.',
+            itemLabel: (p) => `${p.fields.language.value || 'Language'}: ${LEVELS[p.fields.level.value as keyof typeof LEVELS]?.name ?? ''}`,
+          },
         ),
       },
     }),

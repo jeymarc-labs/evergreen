@@ -5,6 +5,7 @@ import { createReader } from '@keystatic/core/reader';
 import keystaticConfig from '../../keystatic.config';
 import { visiblePosts, readingMinutes } from './blog';
 import { isSafeHref } from './links';
+import { languageRows } from './languages';
 import { mergeNearby, resolvePlace, type CityLookup, type Place } from './places';
 import cityLookup from '../data/world-cities.json';
 
@@ -35,10 +36,16 @@ export async function getProfile() {
   const profile = await reader.singletons.profile.read();
   if (!profile) throw new Error('Missing src/content/settings/profile.yaml (edit "Profile" in /keystatic)');
   // Links are written in the admin: drop anything that isn't a web or email link.
-  return { ...profile, links: profile.links.filter((l) => isSafeHref(l.url)) };
+  return { ...profile, links: profile.links.filter((l) => isSafeHref(l.url)), languages: languageRows(profile.languages) };
 }
 
-export async function getPlaces(): Promise<Place[]> {
+// Read once per build: Travel, About and /travel all use it.
+let placesCache: Promise<Place[]> | undefined;
+export function getPlaces(): Promise<Place[]> {
+  return (placesCache ??= readPlaces());
+}
+
+async function readPlaces(): Promise<Place[]> {
   const data = await reader.singletons.places.read();
   if (!data) throw new Error('Missing src/content/settings/places.yaml (edit "Places" in /keystatic)');
   // Coordinates come from the Natural Earth city list unless typed in the admin (the generated

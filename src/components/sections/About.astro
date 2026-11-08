@@ -1,9 +1,21 @@
 ---
 import { ArrowUpRight, Briefcase, Layers, Users } from '@lucide/astro';
 import Section from '../Section.astro';
-import { getProfile } from '../../lib/content';
+import { getPlaces, getProfile } from '../../lib/content';
+import { quickFacts } from '../../lib/about';
+import Languages from '../Languages.astro';
+import QuickFacts from '../QuickFacts.astro';
+import Principles from '../Principles.astro';
+import BeyondWork from '../BeyondWork.astro';
 
 const profile = await getProfile();
+const places = await getPlaces();
+const facts = quickFacts({
+  yearsInFinance: profile.yearsInFinance,
+  marathons: profile.marathons,
+  cities: places.length,
+  languages: profile.languages.length,
+});
 const linkedin = profile.links.find((l) => /linkedin\.com/i.test(l.url));
 
 const roles = [
@@ -25,6 +37,10 @@ const roles = [
       ))
     }
   </div>
+  <QuickFacts facts={facts} />
+  <Principles items={profile.principles} />
+  {profile.languages.length > 0 && <Languages rows={profile.languages} />}
+  <BeyondWork items={profile.beyond} />
   {
     linkedin && (
       <a href={linkedin.url} class="reveal mt-10 inline-flex items-center gap-2 font-medium text-accent">

@@ -18,3 +18,31 @@ links:
   - label: GitHub
     url: https://github.com/
     hint: ''
+languages:
+  - language: German
+    level: native
+  - language: English
+    level: fluent
+  - language: French
+    level: conversational
+  - language: Filipino
+    level: conversational
+yearsInFinance: 12
+marathons: 5
+principles:
+  - title: Find the problem first
+    text: Most of the work is understanding what's really broken before deciding what to build.
+  - title: Numbers tell, people decide
+    text: Data starts the conversation; the people who use the thing finish it.
+  - title: Ship small, learn fast
+    text: A small step in front of real users beats a perfect plan in a slide deck.
+beyond:
+  - title: Apple fan
+    text: Always the first to read the keynote notes, and the last to stop talking about them.
+    icon: laptop
+  - title: Learning AI in public
+    text: Building real things with Claude and writing down what works and what doesn't.
+    icon: sparkles
+  - title: City Run
+    text: A running tour app for Zürich, built in the evenings.
+    icon: footprints

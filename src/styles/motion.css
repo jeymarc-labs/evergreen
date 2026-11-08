@@ -94,6 +94,17 @@
   .js .grow-bar { transform: scaleX(0); transform-origin: left; }
   .js .grow-bar.in { transform: none; transition: transform 1.2s var(--ease-settle) 0.2s; }
   .js .star-land { transform: scale(0.3); opacity: 0; }
+  /* Languages: dots fill one by one, row after row; the level pill pops in after its row. */
+  .js .lang-dot.on { transform: scale(0.2); opacity: 0.15; }
+  .js .in .lang-dot.on {
+    transform: none; opacity: 1;
+    transition: transform 0.5s var(--ease-bounce) calc(0.25s + var(--d) * 90ms), opacity 0.2s calc(0.25s + var(--d) * 90ms);
+  }
+  .js .lang-pill { transform: scale(0.85); opacity: 0; }
+  .js .in .lang-pill {
+    transform: none; opacity: 1;
+    transition: transform 0.5s var(--ease-spring) calc(0.25s + var(--d) * 90ms), opacity 0.3s calc(0.25s + var(--d) * 90ms);
+  }
   .js .in .star-land { transform: none; opacity: 1; transition: transform 0.7s var(--ease-bounce) 0.35s, opacity 0.2s 0.35s; }
 
   /* Fallback where scroll-driven animations don't exist (Firefox, older Safari): the same

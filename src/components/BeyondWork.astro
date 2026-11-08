@@ -1,0 +1,36 @@
+---
+// "Beyond work": a few personal things, each with an icon from a fixed set (src/lib/about.ts).
+import { BookOpen, Camera, Code, Coffee, Footprints, Heart, Laptop, Music, Plane, Sparkles } from '@lucide/astro';
+import type { BeyondIcon } from '../lib/about';
+
+interface Props {
+  items: readonly { title: string; text: string; icon: string }[];
+}
+const { items } = Astro.props;
+const ICONS: Record<BeyondIcon, typeof Heart> = {
+  laptop: Laptop, sparkles: Sparkles, footprints: Footprints, plane: Plane, book: BookOpen,
+  coffee: Coffee, camera: Camera, music: Music, heart: Heart, code: Code,
+};
+---
+
+{
+  items.length > 0 && (
+    <div class="mt-16">
+      <h3 class="reveal text-xl font-semibold tracking-tight">Beyond work</h3>
+      <ul class="mt-6 grid gap-5 sm:grid-cols-3 stagger">
+        {items.map((b) => {
+          const Icon = ICONS[b.icon as BeyondIcon] ?? Heart;
+          return (
+            <li class="reveal lift flex gap-4 rounded-3xl bg-accent-soft p-6">
+              <Icon size={24} stroke-width={1.6} class="mt-0.5 shrink-0 text-accent" aria-hidden="true" />
+              <div>
+                <p class="font-semibold">{b.title}</p>
+                <p class="mt-1 text-sm text-muted">{b.text}</p>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  )
+}
