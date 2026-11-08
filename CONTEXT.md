@@ -13,7 +13,8 @@ Brief: `BRIEF.md`. Phases: `ROADMAP.md`. Why: `DECISIONS.md`.
 | `tests/` | Unit tests (`node --test`, run by `check.sh`) |
 | `src/content.config.ts` | Typed content models (posts) |
 | `keystatic.config.ts` | Admin: posts, Now, Profile |
-| `src/content/` | Posts (`posts/*.mdoc`) and settings (`settings/now.yaml`, `profile.yaml`) |
+| `src/content/` | Posts (`posts/*.mdoc`) and settings (`settings/now.yaml`, `profile.yaml`, `places.yaml`) |
+| `src/lib/places.ts`, `src/components/WorldMap.astro`, `TravelMap.astro` | Travel map: projection, pins, interactive /travel |
 | `src/assets/posts/` | Post photos |
 | `scripts/clean_images.mjs` | Photo metadata/size check and fix (also run by `.github/workflows/images.yml`) |
 | `src/styles/tokens.css` | Design tokens (colours, type, motion) |
@@ -50,6 +51,9 @@ Brief: `BRIEF.md`. Phases: `ROADMAP.md`. Why: `DECISIONS.md`.
     Jeymarc's first sign-in and a test save from the live admin are not yet verified.
   - Photo Action ran on the Phase 2 push: success, nothing to clean.
   - `scripts/check.sh` passes (18 unit tests, 8 pages).
+- **Travel map built locally (2026-11-08), not pushed:** 30 cities in 9 countries, static map on
+  the home page, interactive map on `/travel`, editable under "Places" in the admin (city +
+  country; coordinates looked up at build time).
 - GitHub: `jeymarc-labs/evergreen` (public), `main` pushed 2026-11-08. This repo commits as
   `Jeymarc Sison <jeymarc.labs@gmail.com>` (local git config) so Vercel Hobby accepts the
   deploys.

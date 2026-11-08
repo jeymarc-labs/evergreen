@@ -1,6 +1,7 @@
 // Keystatic admin (/keystatic). In `astro dev` it edits files on disk; on the live site it reads
 // and commits to GitHub as the signed-in user (jeymarclabs), which Vercel then deploys.
 import { config, collection, singleton, fields } from '@keystatic/core';
+import countries from './src/data/countries.json';
 
 // Images live under src/assets so Astro optimises them (and strips metadata from what it serves).
 // publicPath is relative to the content file, so Astro's image() schema can resolve it.
@@ -15,7 +16,7 @@ export default config({
 
   ui: {
     brand: { name: 'Jeymarc Sison' },
-    navigation: { Writing: ['posts'], 'Home page': ['now', 'profile'] },
+    navigation: { Writing: ['posts'], 'Home page': ['now', 'profile', 'places'] },
   },
 
   collections: {
@@ -79,6 +80,46 @@ export default config({
           validation: { length: { min: 1, max: 300 } },
         }),
         updated: fields.date({ label: 'Last updated', defaultValue: { kind: 'today' }, validation: { isRequired: true } }),
+      },
+    }),
+    places: singleton({
+      label: 'Places',
+      path: 'src/content/settings/places',
+      format: 'yaml',
+      schema: {
+        places: fields.array(
+          fields.object({
+            city: fields.text({
+              label: 'City',
+              description: 'The pin is placed automatically for cities (e.g. Lisbon, Kyoto).',
+              validation: { length: { min: 1, max: 60 } },
+            }),
+            country: fields.select({
+              label: 'Country',
+              options: Object.entries(countries).map(([value, label]) => ({ value, label })),
+              defaultValue: 'FRA',
+            }),
+            lat: fields.number({
+              label: 'Latitude (only if needed)',
+              description:
+                'Leave empty for cities. Only for islands, regions or small towns the site can’t find (e.g. Bohol): in Google Maps, right-click the centre and copy the first number. Never a hotel or home address.',
+              step: 0.01,
+              validation: { min: -58, max: 84 },
+            }),
+            lng: fields.number({
+              label: 'Longitude (only if needed)',
+              description: 'The second number from Google Maps (west is negative). Fill in both or neither.',
+              step: 0.01,
+              validation: { min: -180, max: 180 },
+            }),
+          }),
+          {
+            label: 'Cities visited',
+            description:
+              'One pin per place on the travel map; it appears about a minute after saving. No dates and no home city: the list is public. If a city can’t be found, the site won’t update and Vercel emails you why.',
+            itemLabel: (p) => `${p.fields.city.value || 'New place'}, ${countries[p.fields.country.value as keyof typeof countries] ?? ''}`,
+          },
+        ),
       },
     }),
     profile: singleton({

@@ -1,0 +1,113 @@
+---
+// The travel map: land as a dotted fill in the site's greens and a pin per city. Static SVG; the
+// /travel page adds zoom and pan on top (TravelMap.astro). Pins are city-centre points only, with
+// no dates (Shield 2026-11-08).
+import { MAP_H, MAP_W, project, type Place } from '../lib/places';
+
+interface Props {
+  places: Place[];
+  land: string;
+  /** Unique per page, for the SVG pattern id. */
+  id: string;
+  /** Interactive pins (focusable, labelled) for /travel; decorative on the home page. */
+  interactive?: boolean;
+  class?: string;
+}
+const { places, land, id, interactive = false, class: className } = Astro.props;
+
+// Pins drop in from west to east.
+const order = [...places].sort((a, b) => a.lng - b.lng);
+const pins = order.map((p, i) => ({ ...p, ...project(p.lat, p.lng), i }));
+---
+
+<svg
+  viewBox={`0 0 ${MAP_W} ${MAP_H}`}
+  class:list={['world-map block h-auto w-full', className]}
+  data-world-map={id}
+  data-interactive={interactive ? '' : undefined}
+  aria-hidden={interactive ? undefined : 'true'}
+  role={interactive ? 'group' : undefined}
+  aria-label={interactive ? 'Map of the cities I’ve visited' : undefined}
+>
+  <defs>
+    <pattern id={`${id}-dots`} width="5" height="5" patternUnits="userSpaceOnUse">
+      <circle cx="2.5" cy="2.5" r="1.25" class="map-dot" />
+    </pattern>
+  </defs>
+  <path d={land} fill={`url(#${id}-dots)`} />
+  <g>
+    {
+      pins.map((p) => (
+        <g class="pin" transform={`translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})`} style={`--i:${p.i}`}>
+          <g
+            class="pin-drop"
+            data-city={p.city}
+            data-country={p.country}
+            aria-label={interactive ? `${p.city}, ${p.country}` : undefined}
+          >
+            <g class="pin-body">
+              <circle r="9" class="pin-hit" />
+              <circle r="4.6" class="pin-ring" />
+              <circle r="2.6" class="pin-dot" />
+              {interactive && (
+                <text x="10" y="0.35em" class="pin-label">
+                  {p.city}
+                </text>
+              )}
+            </g>
+          </g>
+        </g>
+      ))
+    }
+  </g>
+</svg>
+
+<style>
+  .map-dot { fill: color-mix(in oklab, var(--c-accent) 40%, var(--c-line)); }
+  .world-map:not([data-interactive]) { --k: 1.6; }
+  /* /travel: bigger pins and a larger tap area (CSS r works in all current browsers). */
+  .world-map[data-interactive] .pin-dot { r: 4px; }
+  .world-map[data-interactive] .pin-ring { r: 7.5px; }
+  .world-map[data-interactive] .pin-hit { r: 14px; }
+  .pin-hit { fill: transparent; }
+  .pin-ring { fill: color-mix(in oklab, var(--c-accent) 22%, transparent); }
+  .pin-dot { fill: var(--c-accent); stroke: var(--c-surface); stroke-width: 1; }
+  .pin-body { transform: scale(var(--k, 1)); }
+  .pin-label {
+    font-size: 11px;
+    font-weight: 600;
+    fill: var(--c-ink);
+    stroke: var(--c-surface);
+    stroke-width: 3px;
+    paint-order: stroke;
+    stroke-linejoin: round;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .pin-drop:focus { outline: none; }
+  .pin-drop:focus-visible .pin-ring { stroke: var(--c-accent); stroke-width: 1.5; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .pin-label { transition: opacity 0.3s var(--ease-spring); }
+    .pin-ring { transition: transform 0.4s var(--ease-spring); }
+    .pin-drop:hover .pin-ring { transform: scale(1.5); }
+
+    /* Home page: pins drop in west to east as the map scrolls into view. */
+    @supports (animation-timeline: view()) {
+      .world-map:not([data-interactive]) { view-timeline-name: --world-map; }
+      .world-map:not([data-interactive]) .pin-drop {
+        animation: pin-drop linear both;
+        animation-timeline: --world-map;
+        animation-range: cover calc(8% + var(--i) * 0.7%) cover calc(22% + var(--i) * 0.7%);
+      }
+    }
+    /* /travel: the same drop, once, on load. */
+    .world-map[data-interactive] .pin-drop {
+      animation: pin-drop 0.7s var(--ease-spring) both;
+      animation-delay: calc(150ms + var(--i) * 35ms);
+    }
+  }
+  @keyframes pin-drop {
+    from { opacity: 0; transform: translateY(-18px); }
+  }
+</style>

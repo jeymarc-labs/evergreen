@@ -1,0 +1,285 @@
+---
+// The interactive travel map on /travel: region buttons, zoom buttons, tap a pin to fly to it,
+// drag to pan, pinch (or trackpad pinch) to zoom. Plain page scrolling is never captured.
+// Without JavaScript it's the full static map.
+import { Minus, Plus } from '@lucide/astro';
+import WorldMap from './WorldMap.astro';
+import { regionOf, REGION_LABEL, type Place, type Region } from '../lib/places';
+import { LAND_HIGH } from '../assets/map/land';
+
+interface Props {
+  places: Place[];
+}
+const { places } = Astro.props;
+const regions = (['europe', 'americas', 'asia', 'other'] as Region[]).filter((r) => places.some((p) => regionOf(p) === r));
+const chip = 'rounded-full border border-line px-4 py-2 text-sm font-medium transition hover:border-accent aria-pressed:border-accent aria-pressed:bg-accent aria-pressed:text-accent-ink ';
+---
+
+<div data-travel-map data-places={JSON.stringify(places)}>
+  <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Zoom to a region" data-region-chips hidden>
+    <button type="button" class={chip} data-region="all" aria-pressed="true">World</button>
+    {regions.map((r) => <button type="button" class={chip} data-region={r} aria-pressed="false">{REGION_LABEL[r]}</button>)}
+  </div>
+
+  <div class="relative mt-6 overflow-hidden rounded-[2rem] border border-line bg-surface">
+    <WorldMap places={places} land={LAND_HIGH} id="travel-map" interactive class="travel-svg" />
+    <div class="absolute bottom-4 right-4 flex flex-col overflow-hidden rounded-2xl border border-line bg-surface/90 backdrop-blur" data-zoom-buttons hidden>
+      <button type="button" class="grid size-11 place-items-center hover:text-accent" data-zoom="in" aria-label="Zoom in"><Plus size={18} stroke-width={1.8} aria-hidden="true" /></button>
+      <span class="h-px bg-line"></span>
+      <button type="button" class="grid size-11 place-items-center hover:text-accent" data-zoom="out" aria-label="Zoom out"><Minus size={18} stroke-width={1.8} aria-hidden="true" /></button>
+    </div>
+  </div>
+  <p class="sr-only" aria-live="polite" data-map-status></p>
+</div>
+
+<style>
+  /* World view: vertical swipes scroll the page; horizontal drags and pinches go to the map.
+     Zoomed in, the map takes all touch gestures (the script sets touch-action: none). */
+  [data-travel-map] :global(.travel-svg) { touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
+  /* Phones: a taller map, so cities are big enough to tap. */
+  @media (max-width: 639px) { [data-travel-map] :global(.travel-svg) { aspect-ratio: 1 / 1; } }
+  [data-travel-map] :global(.travel-svg.dragging) { cursor: grabbing; }
+  [data-travel-map] :global(.travel-svg .pin-drop) { cursor: pointer; }
+  /* Names show once zoomed in, or for the pin you point at or pick. */
+  [data-travel-map] :global(.travel-svg[data-labels] .pin-label),
+  [data-travel-map] :global(.travel-svg .pin-drop:hover .pin-label),
+  [data-travel-map] :global(.travel-svg .pin-drop:focus-visible .pin-label),
+  [data-travel-map] :global(.travel-svg .pin-drop[aria-pressed='true'] .pin-label) { opacity: 1; }
+  [data-travel-map] :global(.travel-svg .pin-drop[aria-pressed='true'] .pin-ring) { transform: scale(1.6); }
+</style>
+
+<script>
+  import { MAP_H, MAP_W, fitBox, project, regionOf, REGION_LABEL, type Box, type Place, type Region } from '../lib/places';
+
+  const root = document.querySelector<HTMLElement>('[data-travel-map]');
+  const svg = root?.querySelector<SVGSVGElement>('svg');
+  if (root && svg) {
+    const places = JSON.parse(root.dataset.places ?? '[]') as Place[];
+    const status = root.querySelector<HTMLElement>('[data-map-status]')!;
+    const pattern = svg.querySelector('pattern')!;
+    const chips = [...root.querySelectorAll<HTMLButtonElement>('[data-region]')];
+    const pins = [...svg.querySelectorAll<SVGGElement>('.pin-drop')];
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+    const full: Box = { x: 0, y: 0, w: MAP_W, h: MAP_H };
+    const MIN_W = 45;
+
+    let view: Box = { ...full };
+    let target: Box = { ...full };
+    let region: string | null = 'all';
+    let vel = { x: 0, y: 0, w: 0 };
+    let frame = 0;
+
+    // The view always has the on-screen shape of the map (wide on desktop, square on phones).
+    let aspect = MAP_W / MAP_H;
+    let screenW = 1000;
+    const measure = () => {
+      const r = svg.getBoundingClientRect();
+      if (r.width && r.height) [aspect, screenW] = [r.width / r.height, r.width];
+    };
+    // Fit a box to the screen shape around its centre, then keep it over the map.
+    const clamp = (b: Box): Box => {
+      const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
+      let w = Math.max(b.w, b.h * aspect, MIN_W);
+      w = Math.min(w, Math.max(MAP_W, MAP_H * aspect));
+      const h = w / aspect;
+      const fit = (c: number, size: number, max: number) => (size >= max ? (max - size) / 2 : Math.min(Math.max(c - size / 2, 0), max - size));
+      return { w, h, x: fit(cx, w, MAP_W), y: fit(cy, h, MAP_H) };
+    };
+
+    const draw = () => {
+      svg.setAttribute('viewBox', `${view.x} ${view.y} ${view.w} ${view.h}`);
+      // Map units per screen pixel: pins, names and land dots stay the same size on screen.
+      const k = view.w / screenW;
+      svg.style.setProperty('--k', String(k));
+      pattern.setAttribute('patternTransform', `scale(${0.76 * k})`);
+      svg.toggleAttribute('data-labels', view.w < 350);
+      svg.style.touchAction = view.w < MAP_W * 0.98 ? 'none' : 'pan-y';
+    };
+
+    // A critically damped spring towards the target: glides, never overshoots past the map edge.
+    const step = (last: number) => (now: number) => {
+      const dt = Math.min((now - last) / 1000, 1 / 30);
+      const stiffness = 90, damping = 2 * Math.sqrt(stiffness);
+      for (const key of ['x', 'y', 'w'] as const) {
+        const a = stiffness * (target[key] - view[key]) - damping * vel[key];
+        vel[key] += a * dt;
+        view[key] += vel[key] * dt;
+      }
+      view.h = view.w / aspect;
+      view = { ...clamp(view) };
+      draw();
+      const done = Math.abs(target.w - view.w) < 0.05 && Math.abs(target.x - view.x) < 0.05 && Math.abs(target.y - view.y) < 0.05;
+      if (done) {
+        view = { ...target };
+        vel = { x: 0, y: 0, w: 0 };
+        draw();
+        frame = 0;
+      } else frame = requestAnimationFrame(step(now));
+    };
+
+    const go = (b: Box, animate = true) => {
+      target = clamp(b);
+      if (!animate || reduce.matches) {
+        cancelAnimationFrame(frame);
+        frame = 0;
+        view = { ...target };
+        vel = { x: 0, y: 0, w: 0 };
+        draw();
+      } else if (!frame) frame = requestAnimationFrame(step(performance.now()));
+    };
+
+    const press = (r: string | null) => {
+      region = r;
+      chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.region === r)));
+    };
+    const select = (pin: SVGGElement | null) => pins.forEach((p) => p.setAttribute('aria-pressed', String(p === pin)));
+
+    const showRegion = (region: string) => {
+      select(null);
+      press(region);
+      if (region === 'all') {
+        go(full);
+        status.textContent = `Showing the whole world: ${places.length} cities.`;
+        return;
+      }
+      const inRegion = places.filter((p) => regionOf(p) === region);
+      go(fitBox(inRegion, 90, 0.25, aspect));
+      status.textContent = `Showing ${REGION_LABEL[region as Region]}: ${inRegion.length} cities.`;
+    };
+
+    const showPin = (pin: SVGGElement) => {
+      const place = placeOf(pin);
+      if (!place) return;
+      select(pin);
+      press(null);
+      // Zoom to the city with its neighbours in view.
+      go(fitBox([place], 70, 0.25, aspect));
+      status.textContent = `${place.city}, ${place.country}.`;
+    };
+
+    const zoomBy = (factor: number, cx = target.x + target.w / 2, cy = target.y + target.h / 2) => {
+      const w = target.w * factor, h = target.h * factor;
+      press(null);
+      go({ x: cx - ((cx - target.x) / target.w) * w, y: cy - ((cy - target.y) / target.h) * h, w, h });
+    };
+
+    // Screen point → map point.
+    const toMap = (clientX: number, clientY: number) => {
+      const r = svg.getBoundingClientRect();
+      return { x: view.x + ((clientX - r.left) / r.width) * view.w, y: view.y + ((clientY - r.top) / r.height) * view.h };
+    };
+
+    root.querySelector<HTMLElement>('[data-region-chips]')!.hidden = false;
+    chips.forEach((c) => {
+      c.addEventListener('click', () => showRegion(c.dataset.region!));
+    });
+    const zoomButtons = root.querySelector<HTMLElement>('[data-zoom-buttons]')!;
+    zoomButtons.hidden = false;
+    zoomButtons.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach((b) =>
+      b.addEventListener('click', () => zoomBy(b.dataset.zoom === 'in' ? 0.6 : 1 / 0.6)),
+    );
+    const placeOf = (pin: SVGGElement) => places.find((p) => p.city === pin.dataset.city && p.country === pin.dataset.country);
+    pins.forEach((pin) => {
+      // Buttons only once the script runs: without it they would do nothing.
+      pin.setAttribute('role', 'button');
+      pin.setAttribute('tabindex', '0');
+      pin.setAttribute('aria-pressed', 'false');
+      // click covers mouse, touch and screen readers (VoiceOver/TalkBack send a click).
+      pin.addEventListener('click', () => {
+        if (moved < 4) showPin(pin);
+      });
+      pin.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          showPin(pin);
+        }
+      });
+      // Tabbing to a pin that's off screen brings it into view.
+      pin.addEventListener('focus', () => {
+        const place = placeOf(pin);
+        if (!place) return;
+        const { x, y } = project(place.lat, place.lng);
+        if (x < target.x || x > target.x + target.w || y < target.y || y > target.y + target.h) {
+          go({ ...target, x: x - target.w / 2, y: y - target.h / 2 });
+        }
+      });
+    });
+    root.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') showRegion('all');
+    });
+
+    // Drag to pan, two fingers to pinch. A short tap on a pin picks it.
+    const pointers = new Map<number, { x: number; y: number }>();
+    let moved = 0;
+    let pinch: { dist: number; box: Box; mid: { x: number; y: number } } | null = null;
+
+    svg.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      // A second finger joining doesn't turn the gesture back into a tap.
+      if (pointers.size === 1) moved = 0;
+      if (pointers.size === 2) {
+        const [a, b] = [...pointers.values()];
+        pinch = { dist: Math.hypot(a.x - b.x, a.y - b.y), box: { ...view }, mid: toMap((a.x + b.x) / 2, (a.y + b.y) / 2) };
+      }
+    });
+    svg.addEventListener('pointermove', (e) => {
+      const prev = pointers.get(e.pointerId);
+      if (!prev) return;
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      const r = svg.getBoundingClientRect();
+      if (pinch && pointers.size === 2) {
+        const [a, b] = [...pointers.values()];
+        const f = pinch.dist / Math.max(Math.hypot(a.x - b.x, a.y - b.y), 1);
+        const w = pinch.box.w * f, h = pinch.box.h * f;
+        const { mid } = pinch;
+        go({ x: mid.x - ((mid.x - pinch.box.x) / pinch.box.w) * w, y: mid.y - ((mid.y - pinch.box.y) / pinch.box.h) * h, w, h }, false);
+        moved += 10;
+        return;
+      }
+      const dx = e.clientX - prev.x, dy = e.clientY - prev.y;
+      moved += Math.abs(dx) + Math.abs(dy);
+      if (moved < 4) return;
+      // Capture only once it's a drag, so a tap still reaches the pin under the finger.
+      if (!svg.hasPointerCapture(e.pointerId)) svg.setPointerCapture(e.pointerId);
+      svg.classList.add('dragging');
+      press(null);
+      go({ ...view, x: view.x - (dx / r.width) * view.w, y: view.y - (dy / r.height) * view.h }, false);
+    });
+    const end = (e: PointerEvent) => {
+      pointers.delete(e.pointerId);
+      if (pointers.size < 2) pinch = null;
+      svg.classList.remove('dragging');
+      // Let this gesture's click (if any) see "moved" first, then forget it, so a later
+      // screen-reader activation (a click with no pointer events) isn't ignored.
+      if (pointers.size === 0) setTimeout(() => (moved = 0));
+    };
+    svg.addEventListener('pointerup', end);
+    svg.addEventListener('pointercancel', end);
+    svg.addEventListener('lostpointercapture', end);
+    svg.addEventListener('pointerleave', (e) => {
+      if (!svg.hasPointerCapture(e.pointerId)) end(e);
+    });
+
+    // Trackpad pinch (ctrl + wheel) zooms; a plain scroll wheel keeps scrolling the page.
+    svg.addEventListener(
+      'wheel',
+      (e) => {
+        if (!e.ctrlKey) return;
+        e.preventDefault();
+        const p = toMap(e.clientX, e.clientY);
+        zoomBy(Math.exp(e.deltaY * 0.01), p.x, p.y);
+      },
+      { passive: false },
+    );
+
+    // Keep the view's shape in step with the map's size (rotation, window resize).
+    new ResizeObserver(() => {
+      measure();
+      if (region === 'all') go(full, false);
+      else go(target, false);
+    }).observe(svg);
+    measure();
+    go(full, false);
+  }
+</script>

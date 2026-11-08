@@ -30,7 +30,8 @@ next one starts.
 - Instagram: hand-picked posts now, live feed once jeymarc.logs is a creator account.
 
 ## Phase 4 — Travel
-- Themed MapLibre map (light/dark), a pin per trip.
+- Interactive world map, our own SVG (light/dark), a pin per city; cities edited in the admin
+  (built 2026-11-08).
 - Trip pages: photo highlights, short story, link to the Polarsteps journey.
 
 ## Phase 5 — Projects

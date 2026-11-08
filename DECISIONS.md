@@ -2,6 +2,36 @@
 
 Newest first. One line of why each.
 
+## 2026-11-08 — Travel map
+
+- **Our own SVG world map instead of MapLibre + OpenFreeMap** (Jeymarc approved after the plan was
+  challenged). 31 city pins don't need street-level tiles. Ours is about 8 KB of our own script,
+  no new dependency, no outside requests (privacy notice unchanged), drawn in the site's tokens
+  for light and dark, with animation we control. MapLibre stays possible later.
+- **Land outline from Natural Earth (public domain; Shield CLEAR),** converted once by
+  `scripts/make_world_map.mjs` into the Equal Earth projection (`src/assets/map/land.ts`). Fine
+  detail only where the map zooms (Europe, US, East Asia): about 10 KB gzipped on the home page and
+  about 38 KB on `/travel`.
+- **Home page map is static** (pins drop in west to east as you scroll, CSS only, no JavaScript).
+  **`/travel` is interactive:** region buttons, tap a pin to fly there, drag, pinch, trackpad pinch,
+  +/− buttons, Escape. A plain scroll wheel always scrolls the page; on phones, vertical swipes
+  scroll the page at world view, and pan the map once you've zoomed in (a deliberate trade-off
+  against "never hijack scrolling": only after you zoom in, only inside the map, and World, the
+  − button or Escape give the page back).
+- **One pin per spot:** places within 30 km merge into the bigger city by population (Jeymarc:
+  Miami Beach → Miami); typed coordinates count as smaller. A test keeps `places.yaml` free of
+  such pairs, and the build log notes any merge.
+- **Adding a city in the admin needs only its name and country** (Jeymarc). Coordinates come from
+  Natural Earth's populated places (public domain, 7,342 places), turned into a build-only lookup
+  by `scripts/make_city_lookup.mjs` (`src/data/world-cities.json`, never shipped). Matched by name
+  within the chosen country (largest first; accents and case ignored). Typed latitude/longitude win,
+  for islands and regions (Bohol, Boracay, Champagne). **A city that can't be found stops the build**
+  with a message naming it, so the live site stays as it was and Vercel emails the reason, rather
+  than a pin silently going missing.
+- **Places are a Keystatic singleton** (`src/content/settings/places.yaml`, country as a code from a
+  dropdown), rounded to 2 decimals (about 1 km). Shield CONDITIONS: no dates of any kind, no home or base marker, city
+  centres only, no pin linked to dated items, no country borders or names without a new check.
+
 ## 2026-11-08 — No Strava embeds (Jeymarc)
 
 - **Strava embeds dropped; Running keeps the rest of Phase 3** (run reports, results board,

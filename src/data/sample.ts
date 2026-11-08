@@ -48,12 +48,4 @@ export const latestRace = {
   note: 'New marathon personal best.',
 };
 
-export const trips = [
-  { place: 'Kyoto', country: 'Japan', year: '2025', x: 84, y: 40 },
-  { place: 'Lisbon', country: 'Portugal', year: '2025', x: 45, y: 38 },
-  { place: 'Patagonia', country: 'Argentina', year: '2024', x: 30, y: 82 },
-  { place: 'Reykjavík', country: 'Iceland', year: '2023', x: 43, y: 20 },
-  { place: 'Cape Town', country: 'South Africa', year: '2024', x: 53, y: 78 },
-];
-
 

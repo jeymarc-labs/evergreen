@@ -5,6 +5,8 @@ import { createReader } from '@keystatic/core/reader';
 import keystaticConfig from '../../keystatic.config';
 import { visiblePosts, readingMinutes } from './blog';
 import { isSafeHref } from './links';
+import { mergeNearby, resolvePlace, type CityLookup, type Place } from './places';
+import cityLookup from '../data/world-cities.json';
 
 export type Post = CollectionEntry<'posts'>;
 export type PostCard = Post['data'] & { id: string; minutes: number };
@@ -34,4 +36,17 @@ export async function getProfile() {
   if (!profile) throw new Error('Missing src/content/settings/profile.yaml (edit "Profile" in /keystatic)');
   // Links are written in the admin: drop anything that isn't a web or email link.
   return { ...profile, links: profile.links.filter((l) => isSafeHref(l.url)) };
+}
+
+export async function getPlaces(): Promise<Place[]> {
+  const data = await reader.singletons.places.read();
+  if (!data) throw new Error('Missing src/content/settings/places.yaml (edit "Places" in /keystatic)');
+  // Coordinates come from the Natural Earth city list unless typed in the admin (the generated
+  // JSON has the CityLookup shape; TypeScript widens its tuples, hence the cast). A city that can't
+  // be placed stops the build with a message saying which one (the live site stays as it was).
+  const resolved = data.places.map((p) => resolvePlace(p, cityLookup as unknown as CityLookup));
+  // One pin per spot, named after the bigger city (e.g. Miami Beach → Miami).
+  const { kept, merged } = mergeNearby(resolved);
+  for (const m of merged) console.info(`Places: "${m.dropped}" is shown as "${m.into}" (same area, bigger city).`);
+  return kept;
 }

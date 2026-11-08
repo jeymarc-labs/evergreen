@@ -1,0 +1,67 @@
+places:
+  - city: Bohol
+    country: PHL
+    lat: 9.85
+    lng: 124.14
+  - city: Cebu
+    country: PHL
+  - city: Boracay
+    country: PHL
+    lat: 11.97
+    lng: 121.92
+  - city: Manila
+    country: PHL
+  - city: Ningbo
+    country: CHN
+  - city: Beijing
+    country: CHN
+  - city: Shanghai
+    country: CHN
+  - city: Guilin
+    country: CHN
+  - city: Prague
+    country: CZE
+  - city: Berlin
+    country: DEU
+  - city: Cologne
+    country: DEU
+  - city: Paris
+    country: FRA
+  - city: Champagne
+    country: FRA
+    lat: 49.26
+    lng: 4.03
+  - city: Rome
+    country: ITA
+  - city: Milan
+    country: ITA
+  - city: Florence
+    country: ITA
+  - city: Honolulu
+    country: USA
+  - city: Los Angeles
+    country: USA
+  - city: San Diego
+    country: USA
+  - city: Las Vegas
+    country: USA
+  - city: Chicago
+    country: USA
+  - city: Cleveland
+    country: USA
+  - city: New York
+    country: USA
+  - city: Orlando
+    country: USA
+  - city: Miami
+    country: USA
+  - city: London
+    country: GBR
+  - city: Nottingham
+    country: GBR
+  - city: Oxford
+    country: GBR
+  - city: Belfast
+    country: GBR
+  - city: Dublin
+    country: IRL
