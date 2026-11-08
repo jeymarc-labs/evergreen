@@ -34,13 +34,14 @@ Brief: `BRIEF.md`. Phases: `ROADMAP.md`. Why: `DECISIONS.md`.
     Turnstile, success state. Not yet tested against real Resend (needs Jeymarc's keys).
   - All content is still sample (`SAMPLE_CONTENT = true` shows a pill).
   - `scripts/check.sh` passes (9 unit tests, 6 pages).
-- GitHub: `jeymarc-labs/evergreen` is public and empty; local `origin` points at it. Nothing
-  pushed. Nothing deployed. Domain not registered.
+- GitHub: `jeymarc-labs/evergreen` (public), `main` pushed 2026-11-08. This repo commits as
+  `Jeymarc Sison <jeymarc.labs@gmail.com>` (local git config) so Vercel Hobby accepts the
+  deploys. Nothing deployed yet. Domain not registered.
 
 ## Waiting on Jeymarc
 
 - Register the domain (.ch or .com).
-- Connect `jeymarc-labs/evergreen` to Vercel Hobby (after the first push).
+- Connect `jeymarc-labs/evergreen` to Vercel Hobby (signed in as `jeymarclabs`).
 - Contact form: Resend account + API key, Cloudflare Turnstile site (site key + secret), and
   the recipient address, all as Vercel env vars (`.env.example` lists them). With the domain
   verified in Resend, set CONTACT_FROM to an address on it.
