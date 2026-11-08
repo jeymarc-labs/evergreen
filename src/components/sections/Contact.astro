@@ -1,8 +1,11 @@
 ---
 import { ArrowUpRight, Send } from '@lucide/astro';
 import { PUBLIC_TURNSTILE_SITE_KEY } from 'astro:env/client';
-import { links } from '../../data/sample';
-import BrandIcon from '../BrandIcon.astro';
+import { getProfile } from '../../lib/content';
+import { brandFor } from '../../lib/links';
+import BrandLogo from '../BrandLogo.astro';
+
+const { links } = await getProfile();
 
 // The form posts to /api/contact (Vercel function → Resend). Cloudflare Turnstile is loaded
 // only when the visitor starts using the form, so nothing goes to Cloudflare on page load.
@@ -18,15 +21,19 @@ const field =
     <p class="reveal text-[13px] font-semibold uppercase tracking-[0.16em] text-accent">Elsewhere</p>
     <ul class="mt-6 flex flex-wrap gap-3">
       {
-        links.map((l) => (
+        links.map((l) => {
+          const brand = brandFor(l.url);
+          return (
           <li class="reveal">
-            <a href={l.href} class="group inline-flex items-center gap-2 rounded-full border border-line px-5 py-2.5 font-medium transition hover:border-accent hover:text-accent">
-              <BrandIcon brand={l.brand} class="transition-colors" />
+            <a href={l.url} class:list={['group inline-flex items-center gap-2 rounded-full border border-line py-2 font-medium transition hover:border-accent hover:text-accent', brand ? 'pl-2.5 pr-5' : 'px-5']}>
+              {brand && <BrandLogo brand={brand} />}
+              {l.hint && <span class="sr-only">{l.hint} </span>}
               {l.label}
               <ArrowUpRight size={16} stroke-width={1.8} class="transition-transform duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
             </a>
           </li>
-        ))
+          );
+        })
       }
     </ul>
 

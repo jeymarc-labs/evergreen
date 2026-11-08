@@ -1,12 +1,11 @@
 ---
-import { Medal, Timer, CircleCheck, CircleDashed, Circle } from '@lucide/astro';
+import { Medal, Timer, Star } from '@lucide/astro';
 import Section from '../Section.astro';
 import StravaEmbed from '../StravaEmbed.astro';
 import { runningStats, majors, latestRace } from '../../data/sample';
 import { majorsProgress } from '../../lib/running';
 
 const progress = majorsProgress(majors);
-const statusIcon = { done: CircleCheck, planned: CircleDashed, open: Circle } as const;
 const statusLabel = { done: 'Done', planned: 'Planned', open: 'Someday' } as const;
 ---
 
@@ -14,15 +13,19 @@ const statusLabel = { done: 'Done', planned: 'Planned', open: 'Someday' } as con
   id="running"
   eyebrow="Running · jeymarc.logs"
   title="Every run tells a story."
-  lede="Training logs, race reports and the long road to all seven World Marathon Majors."
+  lede="Training logs, race reports and the long road to all eight World Marathon Majors."
   deepDive={{ href: '/running', label: 'Into the logs' }}
 >
   <!-- Stats -->
-  <div class="grid gap-10 sm:grid-cols-3">
+  <div class="grid grid-cols-2 gap-x-6 gap-y-12 lg:grid-cols-4">
     {
       runningStats.map((s) => (
         <div class="pop">
-          <p class="text-6xl font-semibold tracking-tight text-accent sm:text-7xl">{s.value}</p>
+          {s.value ? (
+            <p class="text-4xl font-semibold tabular-nums tracking-tight text-accent sm:text-5xl lg:text-6xl">{s.value}</p>
+          ) : (
+            <p class="text-4xl font-semibold tracking-tight text-muted/50 sm:text-5xl lg:text-6xl" aria-label="Coming soon">––:––</p>
+          )}
           <p class="mt-2 text-muted">{s.label}</p>
         </div>
       ))
@@ -38,10 +41,9 @@ const statusLabel = { done: 'Done', planned: 'Planned', open: 'Someday' } as con
     <div class="reveal mt-6 h-1.5 overflow-hidden rounded-full bg-line">
       <div class="h-full rounded-full bg-accent" style={`width: ${progress.percent}%`}></div>
     </div>
-    <ul class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-7">
+    <ul class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
       {
         majors.map((m) => {
-          const Icon = statusIcon[m.status];
           return (
             <li
               class:list={[
@@ -49,7 +51,14 @@ const statusLabel = { done: 'Done', planned: 'Planned', open: 'Someday' } as con
                 m.status === 'done' ? 'border-accent/40 bg-accent-soft' : 'border-line bg-card',
               ]}
             >
-              <Icon size={30} stroke-width={1.4} class={m.status === 'open' ? 'text-muted' : 'text-accent'} aria-hidden="true" />
+              <Star
+                size={30}
+                stroke-width={1.4}
+                fill={m.status === 'done' ? 'currentColor' : 'none'}
+                stroke-dasharray={m.status === 'planned' ? '3 3' : undefined}
+                class={m.status === 'open' ? 'text-muted' : 'text-accent'}
+                aria-hidden="true"
+              />
               <p class="mt-4 font-semibold">{m.city}</p>
               <p class="mt-1 text-xs text-muted">{statusLabel[m.status]}{m.year && ` · ${m.year}`}</p>
             </li>

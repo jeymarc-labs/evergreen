@@ -1,0 +1,51 @@
+# Cleans photos uploaded through the admin (/keystatic): removes EXIF/GPS metadata, auto-rotates,
+# limits size. Runs only when images change on main. Free on a public repo.
+#
+# The commit is authored as Jeymarc so Vercel Hobby deploys it (Hobby only deploys commits by the
+# owner). Note: the original upload stays in git history; remove location before uploading.
+name: Clean photos
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/assets/**'
+      - 'public/**'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: clean-photos
+  cancel-in-progress: false
+
+jobs:
+  clean:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Clean photos
+        # Fails (red) only if metadata couldn't be removed; size/format leftovers are warnings.
+        run: node scripts/clean_images.mjs --fix
+      - name: Commit cleaned photos
+        # Commit whatever was cleaned even if the step above failed for another file.
+        if: ${{ !cancelled() }}
+        run: |
+          if git diff --quiet; then echo "Nothing to clean"; exit 0; fi
+          git config user.name "Jeymarc Sison"
+          git config user.email "jeymarc.labs@gmail.com"
+          git add -A src/assets public
+          git commit -m "Clean photo metadata and size (automatic)"
+          # An admin save may have landed meanwhile: rebase onto it and retry once.
+          for attempt in 1 2; do
+            git pull --rebase origin main && git push && exit 0
+            echo "Push attempt $attempt failed; retrying"
+            git rebase --abort 2>/dev/null || true
+            sleep 5
+          done
+          exit 1

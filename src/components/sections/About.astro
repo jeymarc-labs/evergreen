@@ -1,7 +1,10 @@
 ---
 import { ArrowUpRight, Briefcase, Layers, Users } from '@lucide/astro';
 import Section from '../Section.astro';
-import { about } from '../../data/sample';
+import { getProfile } from '../../lib/content';
+
+const profile = await getProfile();
+const linkedin = profile.links.find((l) => /linkedin\.com/i.test(l.url));
 
 const roles = [
   { icon: Briefcase, title: 'Finance', text: 'My whole career, at two global banks.' },
@@ -10,7 +13,7 @@ const roles = [
 ];
 ---
 
-<Section id="about" eyebrow="About" title="Numbers, products and people." lede={about.line}>
+<Section id="about" eyebrow="About" title="Numbers, products and people." lede={profile.about}>
   <div class="grid gap-5 sm:grid-cols-3">
     {
       roles.map(({ icon: Icon, title, text }) => (
@@ -22,7 +25,11 @@ const roles = [
       ))
     }
   </div>
-  <a href={about.linkedin} class="reveal mt-10 inline-flex items-center gap-2 font-medium text-accent">
-    More on LinkedIn <ArrowUpRight size={18} stroke-width={1.8} aria-hidden="true" />
-  </a>
+  {
+    linkedin && (
+      <a href={linkedin.url} class="reveal mt-10 inline-flex items-center gap-2 font-medium text-accent">
+        More on LinkedIn <ArrowUpRight size={18} stroke-width={1.8} aria-hidden="true" />
+      </a>
+    )
+  }
 </Section>

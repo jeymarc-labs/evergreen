@@ -1,0 +1,35 @@
+---
+import { Sparkles } from '@lucide/astro';
+import { SERIES, formatDate } from '../lib/blog';
+import type { PostCard } from '../lib/content';
+
+interface Props {
+  post: PostCard;
+  featured?: boolean;
+}
+const { post, featured = false } = Astro.props;
+const series = post.series !== 'none' ? SERIES[post.series] : undefined;
+---
+
+<a
+  href={`/blog/${post.id}`}
+  class:list={['reveal lift group relative block overflow-hidden rounded-[2rem] bg-surface', featured ? 'p-10' : 'p-8']}
+>
+  {featured && <div class="absolute -right-16 -top-16 size-64 rounded-full bg-[radial-gradient(closest-side,var(--c-glow),transparent)]" aria-hidden="true" />}
+  {
+    series && (
+      <p class="relative flex items-center gap-2 text-sm font-semibold text-accent">
+        <Sparkles size={16} stroke-width={1.8} aria-hidden="true" /> {series.title}
+        {post.part && ` · Part ${post.part}`}
+      </p>
+    )
+  }
+  <h3 class:list={['relative font-semibold leading-tight tracking-tight', featured ? 'mt-6 text-3xl sm:text-4xl' : 'mt-3 text-xl leading-snug']}>
+    {post.title}
+  </h3>
+  {featured && <p class="relative mt-4 text-lg text-muted">{post.summary}</p>}
+  <p class:list={['relative text-sm text-muted', featured ? 'mt-10' : 'mt-4']}>
+    <time datetime={post.date.toISOString().slice(0, 10)}>{formatDate(post.date)}</time> · {post.minutes} min read
+    {post.draft && <span class="ml-2 rounded-full bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent">Draft</span>}
+  </p>
+</a>

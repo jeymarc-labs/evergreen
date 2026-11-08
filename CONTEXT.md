@@ -11,7 +11,11 @@ Brief: `BRIEF.md`. Phases: `ROADMAP.md`. Why: `DECISIONS.md`.
 | `src/lib/` | Services: every network call and data shaping (`contact.ts`, `running.ts`) |
 | `src/pages/api/contact.ts` | The only server route (Vercel function) |
 | `tests/` | Unit tests (`node --test`, run by `check.sh`) |
-| `src/content.config.ts` | Typed content models |
+| `src/content.config.ts` | Typed content models (posts) |
+| `keystatic.config.ts` | Admin: posts, Now, Profile |
+| `src/content/` | Posts (`posts/*.mdoc`) and settings (`settings/now.yaml`, `profile.yaml`) |
+| `src/assets/posts/` | Post photos |
+| `scripts/clean_images.mjs` | Photo metadata/size check and fix (also run by `.github/workflows/images.yml`) |
 | `src/styles/tokens.css` | Design tokens (colours, type, motion) |
 | `src/components/sections/` | One component per landing-page section |
 | `src/data/sample.ts` | Mockup sample content (placeholders, not facts) |
@@ -41,6 +45,11 @@ Brief: `BRIEF.md`. Phases: `ROADMAP.md`. Why: `DECISIONS.md`.
     first commit. Needs Keystone, and Shield for brand-mark use.
   - All content is still sample (`SAMPLE_CONTENT = true` shows a pill).
   - `scripts/check.sh` passes (9 unit tests, 6 pages).
+- Phase 2 built locally (2026-11-08), not pushed: Keystatic admin, blog list, post pages with
+  series navigation, RSS (`/rss.xml`), share images from cover photos, landing page reads Now,
+  Profile and the latest posts from `src/content/`. Two sample posts. Photo clean-up Action and
+  check. Admin edit round trip checked in dev (Now saved → file → home page). The live admin
+  still needs the GitHub App setup (below).
 - GitHub: `jeymarc-labs/evergreen` (public), `main` pushed 2026-11-08. This repo commits as
   `Jeymarc Sison <jeymarc.labs@gmail.com>` (local git config) so Vercel Hobby accepts the
   deploys.
@@ -51,7 +60,9 @@ Brief: `BRIEF.md`. Phases: `ROADMAP.md`. Why: `DECISIONS.md`.
 
 ## Waiting on Jeymarc
 
-- Register the domain (.ch or .com).
+- Set up the live admin: open /keystatic on the live site, create the GitHub App it offers (on
+  the jeymarc-labs org), then add its four env vars in Vercel and redeploy.
+- Register the domain (.ch or .com); then change `site` in astro.config.mjs.
 - Switch on Web Analytics in the Vercel dashboard.
 - Portrait photo; race results; Majors done/planned; trip list.
 - Optionally: switch jeymarc.logs Instagram to a creator account.

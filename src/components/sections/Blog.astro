@@ -1,9 +1,10 @@
 ---
-import { Sparkles } from '@lucide/astro';
 import Section from '../Section.astro';
-import { posts } from '../../data/sample';
+import PostCard from '../PostCard.astro';
+import { getPosts } from '../../lib/content';
 
-const [featured, ...rest] = posts;
+// Latest three: the newest is featured, the next two sit beside it.
+const [featured, ...rest] = (await getPosts()).slice(0, 3);
 ---
 
 <Section
@@ -14,24 +15,20 @@ const [featured, ...rest] = posts;
   deepDive={{ href: '/blog', label: 'Read the blog' }}
   tone="card"
 >
-  <div class="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
-    <a href="/blog" class="reveal lift group relative overflow-hidden rounded-[2rem] bg-surface p-10">
-      <div class="absolute -right-16 -top-16 size-64 rounded-full bg-[radial-gradient(closest-side,var(--c-glow),transparent)]"></div>
-      <p class="flex items-center gap-2 text-sm font-semibold text-accent">
-        <Sparkles size={16} stroke-width={1.8} aria-hidden="true" /> {featured.series} · {featured.part}
-      </p>
-      <h3 class="mt-6 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">{featured.title}</h3>
-      <p class="mt-10 text-sm text-muted">{featured.date}</p>
-    </a>
-    <div class="grid gap-6">
-      {
-        rest.map((p) => (
-          <a href="/blog" class="reveal lift rounded-[2rem] bg-surface p-8">
-            <h3 class="text-xl font-semibold leading-snug tracking-tight">{p.title}</h3>
-            <p class="mt-4 text-sm text-muted">{p.date}</p>
-          </a>
-        ))
-      }
-    </div>
-  </div>
+  {
+    featured ? (
+      <div class:list={['grid gap-6', rest.length > 0 && 'lg:grid-cols-[1.3fr_1fr]']}>
+        <PostCard post={featured} featured />
+        {rest.length > 0 && (
+          <div class="grid content-start gap-6">
+            {rest.map((post) => (
+              <PostCard post={post} />
+            ))}
+          </div>
+        )}
+      </div>
+    ) : (
+      <p class="reveal text-lg text-muted">The first posts are on their way.</p>
+    )
+  }
 </Section>

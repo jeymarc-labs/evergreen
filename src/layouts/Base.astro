@@ -1,4 +1,6 @@
 ---
+import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
 import '../styles/tokens.css';
 import '../styles/motion.css';
 import SiteHeader from '../components/SiteHeader.astro';
@@ -8,12 +10,24 @@ import { SAMPLE_CONTENT } from '../data/sample';
 interface Props {
   title?: string;
   description?: string;
+  /** Share image (LinkedIn, iMessage, …). Cropped to 1200×630. */
+  image?: ImageMetadata | null;
+  imageAlt?: string | null;
+  type?: 'website' | 'article';
 }
 
 const {
   title = 'Jeymarc Sison',
   description = 'Jeymarc Sison: running, travel, tech and learning AI in public.',
+  image,
+  imageAlt,
+  type = 'website',
 } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const shareImage = image
+  ? new URL((await getImage({ src: image, width: 1200, height: 630, fit: 'cover', format: 'jpg' })).src, Astro.site)
+  : undefined;
 ---
 
 <!doctype html>
@@ -22,6 +36,24 @@ const {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" type="application/rss+xml" title="Jeymarc Sison · Blog" href="/rss.xml" />
+    <meta property="og:site_name" content="Jeymarc Sison" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonical} />
+    {
+      shareImage && (
+        <>
+          <meta property="og:image" content={shareImage} />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+          {imageAlt && <meta property="og:image:alt" content={imageAlt} />}
+        </>
+      )
+    }
+    <meta name="twitter:card" content={shareImage ? 'summary_large_image' : 'summary'} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="theme-color" content="#0f7a4f" />
     <title>{title}</title>

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # All deterministic checks in one command.
-#   scripts/check.sh          secrets, image sizes, shellcheck, unit tests, types, build
+#   scripts/check.sh          secrets, images, shellcheck, unit tests, types, build
 #   scripts/check.sh --quick  same without the build
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -23,9 +23,8 @@ step "node $(node -v)"
 step "secrets"
 scripts/check_secrets.sh || fail=1
 
-step "image sizes (max 2 MB per original)"
-big=$(find src public -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.avif' -o -iname '*.heic' \) -size +2048k 2>/dev/null || true)
-if [ -n "$big" ]; then echo "$big"; fail=1; else echo "images: ok"; fi
+step "images (metadata, size, format)"
+node scripts/clean_images.mjs --check || fail=1
 
 step "shell scripts"
 if command -v shellcheck >/dev/null; then shellcheck scripts/*.sh && echo "shellcheck: ok" || fail=1

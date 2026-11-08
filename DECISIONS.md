@@ -2,6 +2,45 @@
 
 Newest first. One line of why each.
 
+## 2026-11-08 — Phase 2 build (blog and admin)
+
+- **Menu and landing order: Projects, Blog, Running, Travel** (Jeymarc). The landing sections and
+  interest tiles follow the same order, so the menu works as the page's table of contents.
+- **Profile links show the official brand logos, unchanged** (Jeymarc: original colours are fine).
+  Files from each brand's own download: LinkedIn "in" (brand.linkedin.com, PNG only, cropped to the square without the ® at Jeymarc's request), GitHub
+  Invertocat black/white swapped per theme (github.com/logos), Instagram gradient glyph (Meta Brand
+  Resource Center; the 5000 px PNG scaled to 240 px, because its SVG is 10.9 MB). All shown at 29 px
+  (Instagram's minimum), decorative next to the text label. **Strava too** (Jeymarc wants all
+  five): Strava publishes no general logo, so its mark is the Simple Icons drawing (CC0) in Strava
+  orange #FC4C02. Jeymarc accepts the brand-guideline risk for a personal page. Matched by link
+  host (`brandFor` in `src/lib/links.ts`).
+- ~~**Brand logos removed from the profile links; plain text pills.**~~ (superseded above) Shield (CONDITIONS): LinkedIn,
+  GitHub and Strava forbid recolouring and LinkedIn/GitHub require their official files; Instagram
+  needs at least 29 px. Text pills avoid all of it. Jeymarc didn't choose between options, so the
+  recommended one was applied. Simple Icons' CC0 covers the drawings, not the trademarks.
+- **Keystatic admin at `/keystatic`:** local files in `astro dev`, GitHub mode on the live site,
+  committing as the signed-in user (jeymarclabs), so Vercel Hobby deploys it. Posts are Markdoc
+  (`src/content/posts/*.mdoc`); Now and Profile are YAML singletons in `src/content/settings/`.
+- **React only for the admin:** the 8 public pages load no JavaScript bundle (checked in the build);
+  the React/Keystatic bundles are only requested by `/keystatic`.
+- **New posts start as drafts.** Drafts are hidden on the live site and shown with a badge in dev.
+  They're still readable in the public repo.
+- **Photos: `scripts/clean_images.mjs`.** A GitHub Action strips EXIF/GPS, auto-rotates and limits
+  photos to 2560 px after each push that touches images, committing as Jeymarc so Vercel deploys
+  it. `check.sh` runs the same script in check mode. **The original upload stays in git history**,
+  so the admin tells Jeymarc to turn location off before uploading. HEIC is refused.
+- **The photo job fails (red) on metadata it can't remove and on HEIC/HEIF** (iPhone HEIC carries
+  GPS and can't be cleaned here); it still commits whatever it did clean, and rebases and
+  retries once if an admin save landed meanwhile. Oversize and GIF are warnings.
+- **Content links are filtered:** Markdoc only renders http/https/mailto and same-site links,
+  and profile links go through the same check (`src/lib/links.ts`). A `#` heading in a post
+  renders as `<h2>`, so the title stays the page's only `<h1>`.
+- **Site URL is evergreen-tan.vercel.app** (canonical and share links) until the domain exists.
+- **`npm audit`: new moderate finding `minimatch` in `@keystatic/core`**, a regex slowdown on
+  crafted glob patterns. Patterns come from our config, not visitors. Accepted.
+- Shield skipped for React, Markdoc and RSS: MIT, no data leaves the site. Keystatic was cleared
+  in the first Shield pass.
+
 ## 2026-11-08 — Phase 1 build
 
 - **Contact form posts to `/api/contact`, the site's only Vercel function.** Every page stays

@@ -1,0 +1,18 @@
+/* Long-form reading (blog posts). Colours from tokens only. */
+.prose { font-size: 1.1875rem; line-height: 1.75; color: var(--c-ink); }
+.prose > * + * { margin-top: 1.4em; }
+.prose h2 { margin-top: 2.4em; font-size: 1.75rem; line-height: 1.2; font-weight: 600; letter-spacing: -0.015em; }
+.prose h3 { margin-top: 2em; font-size: 1.35rem; font-weight: 600; letter-spacing: -0.01em; }
+.prose a { color: var(--c-accent); text-decoration: underline; text-underline-offset: 0.2em; }
+.prose strong { font-weight: 600; }
+.prose ul, .prose ol { padding-left: 1.4em; }
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
+.prose li + li { margin-top: 0.4em; }
+.prose li::marker { color: var(--c-accent); }
+.prose blockquote { border-left: 3px solid var(--c-accent); padding-left: 1.2em; color: var(--c-muted); font-style: italic; }
+.prose code { font-size: 0.9em; background: var(--c-card); border: 1px solid var(--c-line); border-radius: 0.4em; padding: 0.1em 0.35em; }
+.prose pre { background: var(--c-card); border: 1px solid var(--c-line); border-radius: 1rem; padding: 1.2em; overflow-x: auto; font-size: 0.9rem; line-height: 1.6; }
+.prose pre code { background: none; border: 0; padding: 0; }
+.prose img { width: 100%; height: auto; border-radius: 1.25rem; margin-block: 2.2em; }
+.prose hr { border: 0; border-top: 1px solid var(--c-line); margin-block: 3em; }

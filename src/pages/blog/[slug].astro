@@ -1,0 +1,102 @@
+---
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import { ArrowLeft, ArrowRight, Sparkles } from '@lucide/astro';
+import Base from '../../layouts/Base.astro';
+import { getPostEntries, getPosts, type Post } from '../../lib/content';
+import { SERIES, formatDate, neighbours, readingMinutes, seriesPosts } from '../../lib/blog';
+import '../../styles/prose.css';
+
+export async function getStaticPaths() {
+  const entries = await getPostEntries();
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props as { entry: Post };
+const { Content } = await render(entry);
+const post = entry.data;
+
+const all = await getPosts();
+const { older, newer } = neighbours(all, entry.id);
+const series = post.series !== 'none' ? SERIES[post.series] : undefined;
+const inSeries = series ? seriesPosts(all, post.series) : [];
+const minutes = readingMinutes(entry.body ?? '');
+---
+
+<Base title={`${post.title} · Jeymarc Sison`} description={post.summary} image={post.cover} imageAlt={post.coverAlt} type="article">
+  <article class="mx-auto max-w-3xl px-5 pb-24 pt-36">
+    <a href="/blog" class="inline-flex items-center gap-1.5 text-sm font-medium text-accent">
+      <ArrowLeft size={16} stroke-width={1.8} aria-hidden="true" /> All posts
+    </a>
+    {
+      series && (
+        <p class="mt-8 flex items-center gap-2 text-sm font-semibold text-accent">
+          <Sparkles size={16} stroke-width={1.8} aria-hidden="true" />
+          {series.title}
+          {post.part && ` · Part ${post.part} of ${inSeries.length}`}
+        </p>
+      )
+    }
+    <h1 class="mt-4 text-4xl font-semibold leading-[1.08] tracking-tight sm:text-6xl">{post.title}</h1>
+    <p class="mt-6 text-xl leading-relaxed text-muted">{post.summary}</p>
+    <p class="mt-6 text-sm text-muted">
+      <time datetime={post.date.toISOString().slice(0, 10)}>{formatDate(post.date)}</time> · {minutes} min read
+      {post.draft && <span class="ml-2 rounded-full bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent">Draft (only visible in dev)</span>}
+    </p>
+
+    {
+      post.cover && (
+        <Image
+          src={post.cover}
+          alt={post.coverAlt ?? ''}
+          widths={[720, 1080, 1440, 2160]}
+          sizes="(min-width: 768px) 720px, 100vw"
+          class="mt-12 w-full rounded-[1.75rem]"
+          loading="eager"
+        />
+      )
+    }
+
+    <div class="prose mt-12">
+      <Content />
+    </div>
+
+    {
+      inSeries.length > 1 && (
+        <nav class="mt-20 rounded-[1.75rem] bg-card p-8" aria-label={`${series!.title} series`}>
+          <p class="text-sm font-semibold text-accent">{series!.title}</p>
+          <ol class="mt-4 space-y-2">
+            {inSeries.map((p) => (
+              <li>
+                {p.id === entry.id ? (
+                  <span class="font-semibold" aria-current="page">{p.part && `${p.part}. `}{p.title}</span>
+                ) : (
+                  <a class="text-muted transition hover:text-ink" href={`/blog/${p.id}`}>{p.part && `${p.part}. `}{p.title}</a>
+                )}
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+
+    <nav class="mt-16 grid gap-4 border-t border-line pt-10 sm:grid-cols-2" aria-label="More posts">
+      {
+        older ? (
+          <a href={`/blog/${older.id}`} class="group rounded-2xl p-4 transition hover:bg-card">
+            <span class="flex items-center gap-1.5 text-sm text-muted"><ArrowLeft size={14} stroke-width={1.8} aria-hidden="true" /> Older</span>
+            <span class="mt-1 block font-semibold">{older.title}</span>
+          </a>
+        ) : <span />
+      }
+      {
+        newer && (
+          <a href={`/blog/${newer.id}`} class="group rounded-2xl p-4 text-right transition hover:bg-card">
+            <span class="flex items-center justify-end gap-1.5 text-sm text-muted">Newer <ArrowRight size={14} stroke-width={1.8} aria-hidden="true" /></span>
+            <span class="mt-1 block font-semibold">{newer.title}</span>
+          </a>
+        )
+      }
+    </nav>
+  </article>
+</Base>

@@ -81,3 +81,12 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Logos that come in a light and a dark version (GitHub): show the one for the current theme. */
+.theme-dark-only { display: none; }
+[data-theme="dark"] .theme-light-only { display: none; }
+[data-theme="dark"] .theme-dark-only { display: inline-block; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .theme-light-only { display: none; }
+  :root:not([data-theme]) .theme-dark-only { display: inline-block; }
+}

@@ -19,7 +19,7 @@ next one starts.
   Privacy notice page.
 - Deployed to a Vercel preview URL.
 
-## Phase 2 — Blog and CMS
+## Phase 2 — Blog and CMS (built 2026-11-08)
 - Keystatic admin: posts, Now section, photo upload.
 - Blog list and post pages, "Learning AI in public" series, RSS, share images.
 

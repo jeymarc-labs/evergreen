@@ -1,4 +1,8 @@
 ---
+import { getProfile } from '../../lib/content';
+
+const profile = await getProfile();
+
 // The portrait is a placeholder silhouette until Jeymarc supplies a photo. The real one will be
 // a cut-out (transparent PNG/AVIF) that sits on the same glow and fades into the page.
 ---
@@ -11,10 +15,10 @@
         Jeymarc<br /><span class="text-accent">Sison.</span>
       </h1>
       <p class="mt-7 max-w-md text-xl leading-relaxed text-muted sm:text-2xl">
-        Finance by day. Runner, traveller and Apple fan always. Learning AI in public.
+        {profile.intro}
       </p>
       <div class="mt-9 flex flex-wrap gap-3">
-        <a href="#running" class="rounded-full bg-accent px-5 py-2.5 text-[15px] font-medium text-accent-ink">Explore</a>
+        <a href="#projects" class="rounded-full bg-accent px-5 py-2.5 text-[15px] font-medium text-accent-ink">Explore</a>
         <a href="#contact" class="rounded-full border border-line px-5 py-2.5 text-[15px] font-medium transition hover:bg-card">Say hello</a>
       </div>
     </div>

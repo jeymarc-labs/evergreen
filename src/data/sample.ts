@@ -1,48 +1,51 @@
 /** While true, every page shows a "Preview · sample content" pill. Turn off once real content is in. */
 export const SAMPLE_CONTENT = true;
 
-// SAMPLE CONTENT for the Phase 1 build. Every value here is a placeholder, not a fact
-// about Jeymarc. Replaced by Keystatic content collections in Phase 2+.
-
-export const now = {
-  updated: 'November 2026',
-  text: 'Building this site with Claude, training for the next marathon, and getting City Run ready for its first runners in Zürich.',
-};
-
-export const about = {
-  line: 'A career in finance at two global banks, working as a consultant and product manager.',
-  linkedin: 'https://www.linkedin.com/',
-};
+// SAMPLE CONTENT: placeholders, not facts about Jeymarc. Running, Travel and Interests become
+// editable in later phases. Now, Profile and posts already live in src/content/ (edit in /keystatic).
 
 export const interests = [
-  { key: 'running', title: 'Running', text: 'Marathons, city runs and the stories they leave behind.' },
-  { key: 'travel', title: 'Travel', text: 'New places, slow mornings, a camera in the pocket.' },
   { key: 'tech', title: 'Tech & Apple', text: 'Products that feel considered, down to the last pixel.' },
   { key: 'ai', title: 'Learning AI', text: 'Learning to build with Claude, in public.' },
+  { key: 'running', title: 'Running', text: 'Marathons, city runs and the stories they leave behind.' },
+  { key: 'travel', title: 'Travel', text: 'New places, slow mornings, a camera in the pocket.' },
 ] as const;
 
-export const runningStats = [
-  { value: '12', label: 'Marathons' },
-  { value: '3:24', label: 'Marathon PB' },
-  { value: '4,800', label: 'km this year' },
+// REAL running data from Jeymarc (2026-11-08). Moves to content collections in Phase 3.
+/** Personal bests, shortest first. `value: null` shows a placeholder until the time is known. */
+export const runningStats: { value: string | null; label: string }[] = [
+  { value: null, label: '5K PB' },
+  { value: null, label: '10K PB' },
+  { value: '1:45:55', label: 'Half marathon PB · Zürich 2025' },
+  { value: '3:30:20', label: 'Marathon PB · Chicago 2026' },
 ];
+
+/** Race results board (Phase 3). Times as h:mm:ss. */
+export const races = [
+  { name: 'Chicago Marathon', date: '2026-10-11', distance: 'marathon', time: '3:30:20', pb: true },
+  { name: 'Berlin Marathon', date: '2025-09-21', distance: 'marathon', time: '3:39:15' },
+  { name: 'Zürich Half Marathon', date: '2025-04-13', distance: 'half', time: '1:45:55', pb: true },
+  { name: 'Berlin Marathon', date: '2014-09-28', distance: 'marathon', time: '4:18:56' },
+] as const;
 
 import type { MajorStatus } from '../lib/running';
 export const majors: { city: string; status: MajorStatus; year?: string }[] = [
-  { city: 'Tokyo', status: 'planned', year: '2027' },
+  { city: 'Tokyo', status: 'open' },
   { city: 'Boston', status: 'open' },
-  { city: 'London', status: 'done', year: '2024' },
+  { city: 'London', status: 'planned', year: '24 April 2027' },
   { city: 'Sydney', status: 'open' },
-  { city: 'Berlin', status: 'done', year: '2023' },
-  { city: 'Chicago', status: 'planned', year: '2026' },
-  { city: 'New York', status: 'done', year: '2025' },
+  { city: 'Berlin', status: 'done', year: '2014 · 2025' },
+  { city: 'Chicago', status: 'done', year: '2026' },
+  { city: 'New York', status: 'open' },
+  // 8th Major from 2027 (confirmed by Abbott WMM, 10 June 2026); first race as a Major 23 May 2027.
+  { city: 'Cape Town', status: 'open' },
 ];
 
 export const latestRace = {
-  name: 'Sample City Marathon',
-  date: 'October 2026',
-  time: '3:31:08',
-  note: 'Negative split, strong last 10 km.',
+  name: 'Chicago Marathon',
+  date: '11 October 2026',
+  time: '3:30:20',
+  note: 'New marathon personal best.',
 };
 
 export const trips = [
@@ -53,16 +56,4 @@ export const trips = [
   { place: 'Cape Town', country: 'South Africa', year: '2024', x: 53, y: 78 },
 ];
 
-export const posts = [
-  { series: 'Learning AI in public', part: 'Part 1', title: 'Why I started building with Claude', date: 'Nov 2026', featured: true },
-  { title: 'Designing a running-tour app, one landmark at a time', date: 'Oct 2026' },
-  { title: 'What a marathon taught me about product work', date: 'Sep 2026' },
-];
 
-export const links = [
-  { label: 'LinkedIn', brand: 'linkedin' as const, href: 'https://www.linkedin.com/' },
-  { label: 'Instagram', brand: 'instagram' as const, href: 'https://www.instagram.com/' },
-  { label: 'jeymarc.logs', brand: 'instagram' as const, href: 'https://www.instagram.com/jeymarc.logs/' },
-  { label: 'Strava', brand: 'strava' as const, href: 'https://www.strava.com/' },
-  { label: 'GitHub', brand: 'github' as const, href: 'https://github.com/' },
-];

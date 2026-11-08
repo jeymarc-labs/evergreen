@@ -1,0 +1,31 @@
+---
+// Official brand marks, used unchanged (no recolouring), only to link to Jeymarc's own profiles.
+// Sources: LinkedIn brand.linkedin.com, GitHub github.com/logos, Instagram Meta Brand Resource Center.
+// Strava publishes no general logo: its mark is the Simple Icons drawing (CC0) in Strava orange #FC4C02.
+// Instagram needs at least 29 px, so every mark is 29 px tall. Decorative: the pill's text names the link.
+import { Image } from 'astro:assets';
+import type { Brand } from '../lib/links';
+import linkedin from '../assets/brand/linkedin-in.png';
+import instagram from '../assets/brand/instagram-glyph.png';
+import githubBlack from '../assets/brand/github-black.svg';
+import githubWhite from '../assets/brand/github-white.svg';
+import strava from '../assets/brand/strava.svg';
+
+interface Props {
+  brand: Brand;
+}
+const { brand } = Astro.props;
+const size = 29;
+---
+
+{brand === 'linkedin' && <Image src={linkedin} alt="" height={size} densities={[1, 2, 3]} class="h-[29px] w-auto" />}
+{brand === 'instagram' && <Image src={instagram} alt="" width={size} height={size} densities={[1, 2, 3]} class="size-[29px]" />}
+{brand === 'strava' && <img src={strava.src} alt="" width={size} height={size} class="size-[29px]" />}
+{
+  brand === 'github' && (
+    <>
+      <img src={githubBlack.src} alt="" width={size} height={size} class="theme-light-only size-[29px]" />
+      <img src={githubWhite.src} alt="" width={size} height={size} class="theme-dark-only size-[29px]" />
+    </>
+  )
+}
