@@ -24,7 +24,7 @@ next one starts.
 - Blog list and post pages, "Learning AI in public" series, RSS, share images.
 
 ## Phase 3 — Running (jeymarc.logs)
-- Strava profile link, and official Strava embeds (click-to-load) for the runs Jeymarc picks.
+- Strava profile link only (no Strava embeds: dropped 2026-11-08, Jeymarc).
 - Run reports (races and special runs) with photos.
 - Race results board, World Marathon Majors tracker.
 - Instagram: hand-picked posts now, live feed once jeymarc.logs is a creator account.

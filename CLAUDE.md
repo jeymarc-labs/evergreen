@@ -35,8 +35,8 @@ Read **CONTEXT.md** (current facts, short), **ROADMAP.md** (phases, what's next)
 - **Astro + TypeScript (strict).** Static by default; client JavaScript only in islands that need
   it (map, theme toggle, contact form, motion). No framework (React etc.) without a reason in
   DECISIONS.md.
-- **Layers:** `src/pages` and `src/components` render only → `src/lib/` services (Strava,
-  Instagram, contact, map) do every network call and data shaping → `src/content.config.ts`
+- **Layers:** `src/pages` and `src/components` render only → `src/lib/` services
+  (Instagram, contact, map) do every network call and data shaping → `src/content.config.ts`
   typed content models (zod). Components never call `fetch` themselves.
 - **Design tokens** live in one place (`src/styles/tokens.css`) as per-theme CSS variables, so a
   component uses one class (`text-accent`) with no `dark:` variant for colour. No hard-coded
@@ -46,8 +46,8 @@ Read **CONTEXT.md** (current facts, short), **ROADMAP.md** (phases, what's next)
   Follow the `apple-design` skill.
 - **Images:** through Astro's image pipeline (AVIF/WebP, sizes). Originals in the repo stay under
   the size limit `check.sh` enforces.
-- **Privacy in code:** runs appear only as official Strava embeds, loaded on click, and only for
-  activities Jeymarc picks. No exact home location ever ships. Photo EXIF/GPS is stripped from
+- **Privacy in code:** no run data, routes or Strava embeds on the site; Strava is a profile link
+  only. No exact home location ever ships. Photo EXIF/GPS is stripped from
   originals before commit.
 - No new dependency (npm package, service, font, tiles) without Shield first. The core stack
   (Astro, Tailwind) was adopted with the 2026-11-08 stack decision and is in that day's Shield pass.

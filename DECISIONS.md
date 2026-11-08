@@ -2,6 +2,12 @@
 
 Newest first. One line of why each.
 
+## 2026-11-08 — No Strava embeds (Jeymarc)
+
+- **Strava embeds dropped; Running keeps the rest of Phase 3** (run reports, results board,
+  Majors tracker, Instagram). Jeymarc doesn't need them. Strava stays a profile link, so no
+  Strava content loads on the site.
+
 ## 2026-11-08 — Phase 2 build (blog and admin)
 
 - **Menu and landing order: Projects, Blog, Running, Travel** (Jeymarc). The landing sections and

@@ -29,16 +29,16 @@ export const races = [
 ] as const;
 
 import type { MajorStatus } from '../lib/running';
-export const majors: { city: string; status: MajorStatus; year?: string }[] = [
-  { city: 'Tokyo', status: 'open' },
-  { city: 'Boston', status: 'open' },
-  { city: 'London', status: 'planned', year: '24 April 2027' },
-  { city: 'Sydney', status: 'open' },
-  { city: 'Berlin', status: 'done', year: '2014 · 2025' },
-  { city: 'Chicago', status: 'done', year: '2026' },
-  { city: 'New York', status: 'open' },
+export const majors: { city: string; flag: string; status: MajorStatus; year?: string }[] = [
+  { city: 'Tokyo', flag: '🇯🇵', status: 'open' },
+  { city: 'Boston', flag: '🇺🇸', status: 'open' },
+  { city: 'London', flag: '🇬🇧', status: 'planned', year: '24 April 2027' },
+  { city: 'Sydney', flag: '🇦🇺', status: 'open' },
+  { city: 'Berlin', flag: '🇩🇪', status: 'done', year: '2014 · 2025' },
+  { city: 'Chicago', flag: '🇺🇸', status: 'done', year: '2026' },
+  { city: 'New York', flag: '🇺🇸', status: 'open' },
   // 8th Major from 2027 (confirmed by Abbott WMM, 10 June 2026); first race as a Major 23 May 2027.
-  { city: 'Cape Town', status: 'open' },
+  { city: 'Cape Town', flag: '🇿🇦', status: 'open' },
 ];
 
 export const latestRace = {
