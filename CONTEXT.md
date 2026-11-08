@@ -54,7 +54,7 @@ Brief: `BRIEF.md`. Phases: `ROADMAP.md`. Why: `DECISIONS.md`.
 - **Travel map and motion live (2026-11-08, commits 753c690, 37d4a9d):** 30 cities in 9 countries, static map on
   the home page, interactive map on `/travel`, editable under "Places" in the admin (city +
   country; coordinates looked up at build time).
-- **Branch `overnight` (2026-11-09), local, not pushed:** About additions (quick facts,
+- **Live 2026-11-09 (commit e6a8727):** About additions (quick facts,
   how I work, beyond work, language pills); running results and Majors editable in the admin
   (PBs, latest race and marathon count worked out from the races); sample-pill switch; 404 page.
 - GitHub: `jeymarc-labs/evergreen` (public), `main` pushed 2026-11-08. This repo commits as
