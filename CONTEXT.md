@@ -25,8 +25,7 @@ Brief: `BRIEF.md`. Phases: `ROADMAP.md`. Why: `DECISIONS.md`.
 
 ## Status (2026-11-08)
 
-- Phase 0 in progress: repo initialised locally (no GitHub remote, nothing committed), docs and
-  agents written. Scaffold builds: Astro 7.4, Tailwind 4.3, Node 24 (nvm, `.nvmrc`), one
+- Phase 0 done: docs, agents, scaffold. Scaffold builds: Astro 7.4, Tailwind 4.3, Node 24 (nvm, `.nvmrc`), one
   placeholder page, light/dark tokens, theme set before paint (follows the system if storage is
   blocked). `scripts/check.sh` passes.
 - Shield pass done 2026-11-08: CONDITIONS overall, **Strava API STOP** for public display (see
@@ -40,28 +39,28 @@ Brief: `BRIEF.md`. Phases: `ROADMAP.md`. Why: `DECISIONS.md`.
     the email arrived. Env vars set in Vercel (secrets marked Sensitive; site key plain).
     Turnstile rejects the in-app automated browser (error 600010), so live form tests must be
     done by Jeymarc in a normal browser.
-  - Unreviewed: `src/components/BrandIcon.astro` + brand icons on the profile links (Simple
-    Icons, CC0) appeared during the build, not written in this session, and went out in the
-    first commit. Needs Keystone, and Shield for brand-mark use.
   - All content is still sample (`SAMPLE_CONTENT = true` shows a pill).
-  - `scripts/check.sh` passes (9 unit tests, 6 pages).
-- Phase 2 built locally (2026-11-08), not pushed: Keystatic admin, blog list, post pages with
+- **Phase 2 live (2026-11-08, commit f23d03d):** Keystatic admin, blog list, post pages with
   series navigation, RSS (`/rss.xml`), share images from cover photos, landing page reads Now,
   Profile and the latest posts from `src/content/`. Two sample posts. Photo clean-up Action and
-  check. Admin edit round trip checked in dev (Now saved → file → home page). The live admin
-  still needs the GitHub App setup (below).
+  check. Admin edit round trip checked in dev (Now saved → file → home page). Menu order
+  Projects, Blog, Running, Travel. Profile links show the five brand logos (original colours).
+  - Live admin configured: GitHub App `jeymarc-labs-evergreen` installed on the org (evergreen
+    repo only), its four env vars in Vercel; the login redirects to GitHub with the client ID.
+    Jeymarc's first sign-in and a test save from the live admin are not yet verified.
+  - Photo Action ran on the Phase 2 push: success, nothing to clean.
+  - `scripts/check.sh` passes (18 unit tests, 8 pages).
 - GitHub: `jeymarc-labs/evergreen` (public), `main` pushed 2026-11-08. This repo commits as
   `Jeymarc Sison <jeymarc.labs@gmail.com>` (local git config) so Vercel Hobby accepts the
   deploys.
 - **Live on Vercel Hobby (team jeymarc-labs): https://evergreen-tan.vercel.app** (2026-11-08).
-  Every push to `main` deploys. Checked live: all 6 pages 200, 404 works, HTTPS + HSTS,
+  Every push to `main` deploys. Checked live at Phase 1: all 6 pages 200, 404 works, HTTPS + HSTS,
   `/api/contact` working. Web Analytics not yet switched on in the dashboard (its script 404s).
   Domain not registered.
 
 ## Waiting on Jeymarc
 
-- Set up the live admin: open /keystatic on the live site, create the GitHub App it offers (on
-  the jeymarc-labs org), then add its four env vars in Vercel and redeploy.
+- First sign-in at /keystatic on the live site, and one test save (then check it deploys).
 - Register the domain (.ch or .com); then change `site` in astro.config.mjs.
 - Switch on Web Analytics in the Vercel dashboard.
 - Portrait photo; race results; Majors done/planned; trip list.
