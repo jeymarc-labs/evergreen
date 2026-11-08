@@ -68,6 +68,13 @@ const shareImage = image
         const dark =
           saved === 'dark' || (saved !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
         document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        // Motion may hide things until the motion script reveals them. If that script hasn't
+        // started within 3 s (failed to load, blocked, old browser), show everything in place.
+        const root = document.documentElement;
+        root.classList.add('js');
+        setTimeout(() => {
+          if (!window.__motion) root.classList.remove('js');
+        }, 3000);
       })();
     </script>
   </head>
@@ -85,5 +92,45 @@ const shareImage = image
         </p>
       )
     }
+    <script>
+      // Motion helper: marks elements as seen (.in) for the fallback reveal and the Running
+      // moments, and counts PB times up once. Reduced motion: everything shows in place.
+      (window as unknown as { __motion?: boolean }).__motion = 'IntersectionObserver' in window;
+      if (!('IntersectionObserver' in window)) document.documentElement.classList.remove('js');
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const countUp = (el: HTMLElement) => {
+        const final = el.textContent ?? '';
+        const parts = final.split(':').map(Number);
+        if (reduce || parts.some(Number.isNaN)) return;
+        const total = parts.reduce((a, n) => a * 60 + n, 0);
+        const start = performance.now();
+        const step = (now: number) => {
+          const t = Math.min((now - start) / 1400, 1);
+          let v = Math.round(total * (1 - Math.pow(1 - t, 4)));
+          const out: string[] = [];
+          for (let i = parts.length - 1; i >= 0; i--) {
+            const n = i === 0 ? v : v % 60;
+            out.unshift(i === 0 ? String(n) : String(n).padStart(2, '0'));
+            v = Math.floor(v / 60);
+          }
+          el.textContent = t < 1 ? out.join(':') : final;
+          if (t < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      };
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            const el = e.target as HTMLElement;
+            el.classList.add('in');
+            if (el.dataset.count !== undefined) countUp(el);
+            io.unobserve(el);
+          }
+        },
+        { threshold: 0.25 },
+      );
+      document.querySelectorAll('.reveal, .pop, .grow-bar, [data-count]').forEach((el) => io.observe(el));
+    </script>
   </body>
 </html>

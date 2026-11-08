@@ -2,6 +2,14 @@
 
 Newest first. One line of why each.
 
+## 2026-11-08 — Motion helper on every page
+
+- **A small motion script runs on every page** (about 1.3 KB, from `Base.astro`): it reveals
+  content once seen where scroll-driven animations don't exist (Firefox, older Safari), plays the
+  Running moments (Majors bar, stars) and counts PB times up once. This replaces "public pages
+  load no JavaScript". Safety net: if it hasn't started within 3 s, everything shows in place;
+  reduced motion shows everything at once; screen readers read the final time, never the count.
+
 ## 2026-11-08 — Travel map
 
 - **Our own SVG world map instead of MapLibre + OpenFreeMap** (Jeymarc approved after the plan was

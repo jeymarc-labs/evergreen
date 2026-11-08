@@ -10,7 +10,7 @@ const anchors = { running: '#running', travel: '#travel', tech: '#projects', ai:
   <div class="mx-auto max-w-6xl px-5">
     <p class="reveal text-[13px] font-semibold uppercase tracking-[0.16em] text-accent">Interests</p>
     <h2 class="reveal mt-3 max-w-3xl text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">What keeps me curious.</h2>
-    <div class="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-4 stagger">
       {
         interests.map((item) => {
           const Icon = icons[item.key];

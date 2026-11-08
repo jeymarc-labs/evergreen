@@ -14,7 +14,7 @@ const roles = [
 ---
 
 <Section id="about" eyebrow="About" title="Numbers, products and people." lede={profile.about}>
-  <div class="grid gap-5 sm:grid-cols-3">
+  <div class="grid gap-5 sm:grid-cols-3 stagger">
     {
       roles.map(({ icon: Icon, title, text }) => (
         <div class="reveal lift rounded-3xl border border-line bg-card p-7">

@@ -21,7 +21,7 @@ const current = (href: string) => (path === href || path.startsWith(`${href}/`) 
       <ul class="hidden items-center gap-6 text-[13px] text-muted sm:flex">
         {nav.map((item) => <li><a class="transition hover:text-ink aria-[current=page]:font-medium aria-[current=page]:text-ink" href={item.href} aria-current={current(item.href)}>{item.label}</a></li>)}
       </ul>
-      <a href="/#contact" class="ml-3 hidden rounded-full bg-accent px-3.5 py-1.5 text-[13px] font-medium text-accent-ink sm:inline-block">Contact</a>
+      <a href="/#contact" class="press ml-3 hidden rounded-full bg-accent px-3.5 py-1.5 text-[13px] font-medium text-accent-ink sm:inline-block">Contact</a>
       <ThemeToggle />
       <!-- Phone menu: native <details>, works without JavaScript. -->
       <details class="mobile-menu sm:hidden">

@@ -16,12 +16,14 @@ const statusLabel = { done: 'Done', planned: 'Planned', open: 'Someday' } as con
   deepDive={{ href: '/running', label: 'Into the logs' }}
 >
   <!-- Stats -->
-  <div class="grid grid-cols-2 gap-x-6 gap-y-12 lg:grid-cols-4">
+  <div class="grid grid-cols-2 gap-x-6 gap-y-12 lg:grid-cols-4 stagger">
     {
       runningStats.map((s) => (
         <div class="pop">
           {s.value ? (
-            <p class="text-4xl font-semibold tabular-nums tracking-tight text-accent sm:text-5xl lg:text-6xl">{s.value}</p>
+            <p class="text-4xl font-semibold tabular-nums tracking-tight text-accent sm:text-5xl lg:text-6xl">
+              <span data-count aria-hidden="true">{s.value}</span><span class="sr-only">{s.value}</span>
+            </p>
           ) : (
             <p class="text-4xl font-semibold tracking-tight text-muted/50 sm:text-5xl lg:text-6xl" aria-label="Coming soon">––:––</p>
           )}
@@ -38,9 +40,9 @@ const statusLabel = { done: 'Done', planned: 'Planned', open: 'Someday' } as con
       <p class="text-muted"><span class="font-semibold text-ink">{progress.done}</span> of {progress.total} done</p>
     </div>
     <div class="reveal mt-6 h-1.5 overflow-hidden rounded-full bg-line">
-      <div class="h-full rounded-full bg-accent" style={`width: ${progress.percent}%`}></div>
+      <div class="grow-bar h-full rounded-full bg-accent" style={`width: ${progress.percent}%`}></div>
     </div>
-    <ul class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+    <ul class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4 stagger">
       {
         majors.map((m) => {
           return (
@@ -59,7 +61,7 @@ const statusLabel = { done: 'Done', planned: 'Planned', open: 'Someday' } as con
                 stroke-width={1.4}
                 fill={m.status === 'done' ? 'currentColor' : 'none'}
                 stroke-dasharray={m.status === 'planned' ? '3 3' : undefined}
-                class={m.status === 'open' ? 'text-muted' : 'text-accent'}
+                class:list={[m.status === 'open' ? 'text-muted' : 'text-accent', m.status === 'done' && 'star-land']}
                 aria-hidden="true"
               />
               <p class="mt-4 font-semibold">{m.city}</p>
@@ -93,7 +95,7 @@ const statusLabel = { done: 'Done', planned: 'Planned', open: 'Someday' } as con
       <h3 class="text-3xl font-semibold tracking-tight sm:text-4xl">From @jeymarc.logs</h3>
       <a href="https://www.instagram.com/jeymarc.logs/" class="font-medium text-accent">Follow on Instagram</a>
     </div>
-    <div class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+    <div class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4 stagger">
       {
         [0, 1, 2, 3].map((i) => (
           <div

@@ -68,3 +68,47 @@
 @media (forced-colors: active) {
   .scrub-text { color: CanvasText; background: none; animation: none; }
 }
+
+/* ---- Added 2026-11-08: cascades, press feedback, Running moments, fallback ---- */
+
+/* Spring-like settle (critically damped look, no overshoot) and a small-bounce variant
+   for the Majors stars only, which "land" like a medal. */
+:root {
+  --ease-settle: linear(0, 0.18 6%, 0.53 16%, 0.79 27%, 0.93 39%, 0.98 52%, 1);
+  --ease-bounce: linear(0, 0.36 9%, 0.86 21%, 1.08 32%, 1.1 38%, 1.03 50%, 0.99 62%, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Cascade: children of a .stagger grid enter one after another, not all at once. */
+  @supports (animation-timeline: view()) {
+    .stagger > :nth-child(4n + 2) { animation-range: entry 8% entry 78%; }
+    .stagger > :nth-child(4n + 3) { animation-range: entry 16% entry 86%; }
+    .stagger > :nth-child(4n + 4) { animation-range: entry 24% entry 94%; }
+  }
+
+  /* Press feedback: instant on pointer-down (apple-design §1). Uses the separate `scale`
+     property so it never fights the reveal animations, which own `transform`. */
+  .lift:active, .press:active, button:active { scale: 0.97; transition: scale 100ms ease-out; }
+
+  /* Running: the Majors bar fills, done stars land, once the element is seen (JS adds .in). */
+  .js .grow-bar { transform: scaleX(0); transform-origin: left; }
+  .js .grow-bar.in { transform: none; transition: transform 1.2s var(--ease-settle) 0.2s; }
+  .js .star-land { transform: scale(0.3); opacity: 0; }
+  .js .in .star-land { transform: none; opacity: 1; transition: transform 0.7s var(--ease-bounce) 0.35s, opacity 0.2s 0.35s; }
+
+  /* Fallback where scroll-driven animations don't exist (Firefox, older Safari): the same
+     reveal, played once when the element is seen. */
+  @supports not (animation-timeline: view()) {
+    .js :is(.reveal, .pop):not(.in) { opacity: 0; transform: translateY(32px) scale(0.98); }
+    .js :is(.reveal, .pop):not(.lift) { transition: opacity 0.6s ease-out, transform 0.8s var(--ease-settle); }
+    .js .lift:is(.reveal, .pop) { transition: opacity 0.6s ease-out, transform 0.5s var(--ease-spring), box-shadow 0.5s var(--ease-spring); }
+    .stagger > :nth-child(4n + 2) { transition-delay: 80ms; }
+    .stagger > :nth-child(4n + 3) { transition-delay: 160ms; }
+    .stagger > :nth-child(4n + 4) { transition-delay: 240ms; }
+  }
+}
+
+/* Less transparency asked for: solid header, no blur. */
+@media (prefers-reduced-transparency: reduce) {
+  header.fixed { background: var(--c-surface); backdrop-filter: none; }
+}
