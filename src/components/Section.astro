@@ -1,0 +1,36 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+
+interface Props {
+  id: string;
+  eyebrow: string;
+  title: string;
+  lede?: string;
+  deepDive?: { href: string; label: string };
+  tone?: 'plain' | 'card';
+}
+
+const { id, eyebrow, title, lede, deepDive, tone = 'plain' } = Astro.props;
+---
+
+<section id={id} class:list={['scroll-mt-14 py-28 sm:py-40', tone === 'card' && 'bg-card']}>
+  <div class="mx-auto max-w-6xl px-5">
+    <p class="reveal text-[13px] font-semibold uppercase tracking-[0.16em] text-accent">{eyebrow}</p>
+    <h2 class="reveal mt-3 max-w-3xl text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">{title}</h2>
+    {lede && <p class="reveal mt-6 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl">{lede}</p>}
+    <div class="mt-16 sm:mt-20">
+      <slot />
+    </div>
+    {
+      deepDive && (
+        <a
+          href={deepDive.href}
+          class="reveal group mt-16 inline-flex items-center gap-2 text-lg font-medium text-accent"
+        >
+          {deepDive.label}
+          <ArrowUpRight size={20} stroke-width={1.8} class="transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" aria-hidden="true" />
+        </a>
+      )
+    }
+  </div>
+</section>

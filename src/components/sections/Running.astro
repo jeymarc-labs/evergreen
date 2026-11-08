@@ -1,0 +1,97 @@
+---
+import { Medal, Timer, CircleCheck, CircleDashed, Circle } from '@lucide/astro';
+import Section from '../Section.astro';
+import StravaEmbed from '../StravaEmbed.astro';
+import { runningStats, majors, latestRace } from '../../data/sample';
+import { majorsProgress } from '../../lib/running';
+
+const progress = majorsProgress(majors);
+const statusIcon = { done: CircleCheck, planned: CircleDashed, open: Circle } as const;
+const statusLabel = { done: 'Done', planned: 'Planned', open: 'Someday' } as const;
+---
+
+<Section
+  id="running"
+  eyebrow="Running · jeymarc.logs"
+  title="Every run tells a story."
+  lede="Training logs, race reports and the long road to all seven World Marathon Majors."
+  deepDive={{ href: '/running', label: 'Into the logs' }}
+>
+  <!-- Stats -->
+  <div class="grid gap-10 sm:grid-cols-3">
+    {
+      runningStats.map((s) => (
+        <div class="pop">
+          <p class="text-6xl font-semibold tracking-tight text-accent sm:text-7xl">{s.value}</p>
+          <p class="mt-2 text-muted">{s.label}</p>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- Majors -->
+  <div class="mt-28">
+    <div class="reveal flex flex-wrap items-end justify-between gap-4">
+      <h3 class="text-3xl font-semibold tracking-tight sm:text-4xl">World Marathon Majors</h3>
+      <p class="text-muted"><span class="font-semibold text-ink">{progress.done}</span> of {progress.total} done</p>
+    </div>
+    <div class="reveal mt-6 h-1.5 overflow-hidden rounded-full bg-line">
+      <div class="h-full rounded-full bg-accent" style={`width: ${progress.percent}%`}></div>
+    </div>
+    <ul class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-7">
+      {
+        majors.map((m) => {
+          const Icon = statusIcon[m.status];
+          return (
+            <li
+              class:list={[
+                'reveal lift flex flex-col items-center rounded-3xl border p-5 text-center',
+                m.status === 'done' ? 'border-accent/40 bg-accent-soft' : 'border-line bg-card',
+              ]}
+            >
+              <Icon size={30} stroke-width={1.4} class={m.status === 'open' ? 'text-muted' : 'text-accent'} aria-hidden="true" />
+              <p class="mt-4 font-semibold">{m.city}</p>
+              <p class="mt-1 text-xs text-muted">{statusLabel[m.status]}{m.year && ` · ${m.year}`}</p>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+
+  <!-- Latest race + featured run -->
+  <div class="mt-28 grid gap-6 lg:grid-cols-[1fr_1.4fr]">
+    <article class="reveal flex flex-col justify-between rounded-3xl bg-accent p-8 text-accent-ink">
+      <div>
+        <p class="flex items-center gap-2 text-sm font-medium"><Medal size={18} stroke-width={1.6} aria-hidden="true" /> Latest race</p>
+        <h3 class="mt-4 text-3xl font-semibold tracking-tight">{latestRace.name}</h3>
+        <p class="mt-1">{latestRace.date}</p>
+      </div>
+      <div class="mt-12">
+        <p class="flex items-center gap-2 text-6xl font-semibold tracking-tight"><Timer size={36} stroke-width={1.4} aria-hidden="true" />{latestRace.time}</p>
+        <p class="mt-3">{latestRace.note}</p>
+        <a href="/running" class="mt-6 inline-block font-medium underline underline-offset-4">Read the race report</a>
+      </div>
+    </article>
+    <StravaEmbed title="Sunday long run" meta="28.4 km · 2:21:40 · sample" />
+  </div>
+
+  <!-- Instagram -->
+  <div class="mt-28">
+    <div class="reveal flex flex-wrap items-end justify-between gap-4">
+      <h3 class="text-3xl font-semibold tracking-tight sm:text-4xl">From @jeymarc.logs</h3>
+      <a href="https://www.instagram.com/jeymarc.logs/" class="font-medium text-accent">Follow on Instagram</a>
+    </div>
+    <div class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {
+        [0, 1, 2, 3].map((i) => (
+          <div
+            class="reveal lift aspect-square rounded-2xl"
+            style={`background: linear-gradient(${135 + i * 40}deg, var(--c-accent-soft), color-mix(in oklab, var(--c-accent) ${30 + i * 12}%, var(--c-card)))`}
+            aria-hidden="true"
+          />
+        ))
+      }
+    </div>
+  </div>
+</Section>

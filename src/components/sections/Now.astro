@@ -1,0 +1,15 @@
+---
+import { now } from '../../data/sample';
+---
+
+<section id="now" class="scroll-mt-14 py-32 sm:py-48">
+  <div class="mx-auto max-w-5xl px-5">
+    <p class="reveal flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.16em] text-accent">
+      <span class="relative inline-block size-2 rounded-full bg-accent pulse"></span>
+      Now · {now.updated}
+    </p>
+    <p class="scrub-text mt-6 text-4xl font-semibold leading-[1.15] tracking-tight sm:text-6xl">
+      {now.text}
+    </p>
+  </div>
+</section>

@@ -1,0 +1,167 @@
+---
+import { ArrowUpRight, Send } from '@lucide/astro';
+import { PUBLIC_TURNSTILE_SITE_KEY } from 'astro:env/client';
+import { links } from '../../data/sample';
+import BrandIcon from '../BrandIcon.astro';
+
+// The form posts to /api/contact (Vercel function → Resend). Cloudflare Turnstile is loaded
+// only when the visitor starts using the form, so nothing goes to Cloudflare on page load.
+// Cloudflare's documented always-passes test site key is used in `astro dev` only.
+const siteKey =
+  PUBLIC_TURNSTILE_SITE_KEY || (import.meta.env.DEV ? '1x00000000000000000000AA' : '');
+const field =
+  'rounded-2xl border border-line bg-card px-4 py-3 text-base font-normal transition focus:border-accent aria-[invalid=true]:border-error';
+---
+
+<section id="contact" class="scroll-mt-14 py-28 sm:py-40">
+  <div class="mx-auto max-w-6xl px-5">
+    <p class="reveal text-[13px] font-semibold uppercase tracking-[0.16em] text-accent">Elsewhere</p>
+    <ul class="mt-6 flex flex-wrap gap-3">
+      {
+        links.map((l) => (
+          <li class="reveal">
+            <a href={l.href} class="group inline-flex items-center gap-2 rounded-full border border-line px-5 py-2.5 font-medium transition hover:border-accent hover:text-accent">
+              <BrandIcon brand={l.brand} class="transition-colors" />
+              {l.label}
+              <ArrowUpRight size={16} stroke-width={1.8} class="transition-transform duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="mt-32 grid gap-12 lg:grid-cols-2">
+      <div>
+        <p class="reveal text-[13px] font-semibold uppercase tracking-[0.16em] text-accent">Contact</p>
+        <h2 class="reveal mt-3 text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">Say hello.</h2>
+        <p class="reveal mt-6 max-w-md text-lg text-muted">A question, a running tip or a travel recommendation: I read every message.</p>
+      </div>
+      <form class="reveal grid gap-4" data-contact-form data-site-key={siteKey} novalidate>
+        <label class="grid gap-1.5 text-sm font-medium">
+          Name
+          <input name="name" autocomplete="name" required maxlength="100" class={field} />
+        </label>
+        <label class="grid gap-1.5 text-sm font-medium">
+          Email
+          <input name="email" type="email" autocomplete="email" required maxlength="200" class={field} />
+        </label>
+        <label class="grid gap-1.5 text-sm font-medium">
+          Message
+          <textarea name="message" rows="5" required minlength="10" maxlength="5000" class:list={[field, 'resize-y']}></textarea>
+        </label>
+        <!-- Honeypot: hidden from people and screen readers; bots fill it in. -->
+        <div class="absolute -left-[9999px]" aria-hidden="true">
+          <label>Website <input name="website" tabindex="-1" autocomplete="off" /></label>
+        </div>
+        <div data-turnstile class="min-h-[65px] empty:min-h-0"></div>
+        <button type="submit" class="mt-2 inline-flex items-center justify-center gap-2 justify-self-start rounded-full bg-accent px-6 py-3 font-medium text-accent-ink disabled:opacity-60">
+          <Send size={18} stroke-width={1.8} aria-hidden="true" /> <span data-label>Send message</span>
+        </button>
+        <p id="contact-status" data-status role="status" aria-live="polite" class="min-h-5 text-sm"></p>
+        <noscript><p class="text-sm text-muted">The form needs JavaScript. You can also reach me on LinkedIn.</p></noscript>
+        <p class="text-xs text-muted">Protected by Cloudflare Turnstile. See the <a class="underline" href="/privacy">privacy notice</a>.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  type Turnstile = { render: (el: HTMLElement, opts: Record<string, unknown>) => string; reset: (id?: string) => void };
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+
+  if (form) {
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const button = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    const label = form.querySelector<HTMLElement>('[data-label]')!;
+    const box = form.querySelector<HTMLElement>('[data-turnstile]')!;
+    const siteKey = form.dataset.siteKey ?? '';
+    let widgetId: string | undefined;
+    let loading: Promise<void> | undefined;
+
+    const say = (text: string, tone: 'ok' | 'error' | 'info') => {
+      status.textContent = text;
+      status.className = `min-h-5 text-sm ${tone === 'ok' ? 'text-accent' : tone === 'error' ? 'text-error' : 'text-muted'}`;
+    };
+
+    // Load Cloudflare's script once, on first interaction with the form.
+    const loadTurnstile = () =>
+      (loading ??= new Promise<void>((resolve, reject) => {
+        if (!siteKey) return reject(new Error('no site key'));
+        const s = document.createElement('script');
+        s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        s.async = true;
+        s.onload = () => {
+          const ts = (window as unknown as { turnstile: Turnstile }).turnstile;
+          widgetId = ts.render(box, { sitekey: siteKey, theme: 'auto', size: 'flexible' });
+          resolve();
+        };
+        s.onerror = () => reject(new Error('turnstile failed to load'));
+        document.head.append(s);
+      }));
+
+    // The widget fills a hidden cf-turnstile-response field when its check is done.
+    const waitForToken = async (ms = 10000) => {
+      const field = () => form.querySelector<HTMLInputElement>('[name="cf-turnstile-response"]')?.value;
+      for (let waited = 0; waited < ms; waited += 200) {
+        if (field()) return true;
+        await new Promise((r) => setTimeout(r, 200));
+      }
+      return Boolean(field());
+    };
+
+    form.addEventListener('focusin', () => loadTurnstile().catch(() => {}), { once: true });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      for (const el of form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input[name]:not([name=website]), textarea')) {
+        const invalid = !el.checkValidity();
+        el.setAttribute('aria-invalid', String(invalid));
+        if (invalid) el.setAttribute('aria-describedby', 'contact-status');
+        else el.removeAttribute('aria-describedby');
+      }
+      if (!form.checkValidity()) {
+        say('Please fill in your name, a valid email and a message of at least 10 characters.', 'error');
+        form.querySelector<HTMLElement>('[aria-invalid=true]')?.focus();
+        return;
+      }
+      try {
+        await loadTurnstile();
+      } catch {
+        say("The form can't load its spam check right now. Please try again later.", 'error');
+        return;
+      }
+      button.disabled = true;
+      label.textContent = 'Sending…';
+      say('', 'info');
+      if (!(await waitForToken())) {
+        say('Please complete the check above, then send again.', 'error');
+        button.disabled = false;
+        label.textContent = 'Send message';
+        return;
+      }
+      try {
+        const res = await fetch('/api/contact', { method: 'POST', body: new FormData(form) });
+        const data = (await res.json()) as { ok: boolean; error?: string; field?: string };
+        if (data.ok) {
+          form.reset();
+          for (const el of form.querySelectorAll('[aria-invalid]')) {
+            el.removeAttribute('aria-invalid');
+            el.removeAttribute('aria-describedby');
+          }
+          say('Thanks! Your message is on its way.', 'ok');
+        } else {
+          const bad = data.field ? form.querySelector(`[name=${data.field}]`) : null;
+          bad?.setAttribute('aria-invalid', 'true');
+          bad?.setAttribute('aria-describedby', 'contact-status');
+          say(data.error ?? 'Something went wrong. Please try again.', 'error');
+        }
+      } catch {
+        say('Something went wrong. Please check your connection and try again.', 'error');
+      } finally {
+        (window as unknown as { turnstile?: Turnstile }).turnstile?.reset(widgetId);
+        button.disabled = false;
+        label.textContent = 'Send message';
+      }
+    });
+  }
+</script>

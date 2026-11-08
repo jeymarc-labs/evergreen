@@ -1,0 +1,46 @@
+---
+// The portrait is a placeholder silhouette until Jeymarc supplies a photo. The real one will be
+// a cut-out (transparent PNG/AVIF) that sits on the same glow and fades into the page.
+---
+
+<section class="relative isolate min-h-dvh overflow-hidden pt-14">
+  <div class="mx-auto grid min-h-[calc(100dvh-3.5rem)] max-w-6xl items-center gap-6 px-5 md:grid-cols-[1.1fr_1fr]">
+    <div class="hero-copy relative z-10 pt-10 md:pt-0">
+      <p class="text-[13px] font-semibold uppercase tracking-[0.16em] text-accent">Hello, I'm</p>
+      <h1 class="mt-3 text-6xl font-semibold leading-[0.95] tracking-tight sm:text-8xl">
+        Jeymarc<br /><span class="text-accent">Sison.</span>
+      </h1>
+      <p class="mt-7 max-w-md text-xl leading-relaxed text-muted sm:text-2xl">
+        Finance by day. Runner, traveller and Apple fan always. Learning AI in public.
+      </p>
+      <div class="mt-9 flex flex-wrap gap-3">
+        <a href="#running" class="rounded-full bg-accent px-5 py-2.5 text-[15px] font-medium text-accent-ink">Explore</a>
+        <a href="#contact" class="rounded-full border border-line px-5 py-2.5 text-[15px] font-medium transition hover:bg-card">Say hello</a>
+      </div>
+    </div>
+
+    <div class="hero-portrait relative mx-auto aspect-[4/5] w-full max-w-md self-end">
+      <div class="absolute inset-[8%] -z-10 rounded-full bg-[radial-gradient(closest-side,var(--c-glow),transparent)] blur-2xl"></div>
+      <div class="absolute inset-x-[10%] bottom-0 top-[18%] -z-10 rounded-t-full bg-gradient-to-b from-accent-soft to-transparent"></div>
+      <svg
+        viewBox="0 0 400 500"
+        class="h-full w-full [mask-image:linear-gradient(to_bottom,black_70%,transparent)]"
+        role="img"
+        aria-label="Portrait placeholder"
+      >
+        <defs>
+          <linearGradient id="portrait-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--c-accent)" stop-opacity="0.55" />
+            <stop offset="100%" stop-color="var(--c-accent)" stop-opacity="0.15" />
+          </linearGradient>
+        </defs>
+        <circle cx="200" cy="165" r="78" fill="url(#portrait-fill)" />
+        <path d="M60 500 C60 360 120 290 200 290 C280 290 340 360 340 500 Z" fill="url(#portrait-fill)" />
+      </svg>
+      <span class="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-surface/80 px-3 py-1 text-[12px] text-muted backdrop-blur">Portrait goes here</span>
+    </div>
+  </div>
+  <div class="pointer-events-none absolute inset-x-0 bottom-6 flex justify-center text-[12px] text-muted" aria-hidden="true">
+    <span class="motion-safe:animate-bounce [animation-iteration-count:3]">Scroll</span>
+  </div>
+</section>

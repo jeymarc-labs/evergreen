@@ -1,0 +1,51 @@
+---
+import { Menu, X } from '@lucide/astro';
+import ThemeToggle from './ThemeToggle.astro';
+
+const nav = [
+  { href: '/running', label: 'Running' },
+  { href: '/travel', label: 'Travel' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/blog', label: 'Blog' },
+];
+---
+
+<header class="fixed inset-x-0 top-0 z-50 border-b border-line/60 bg-surface/70 backdrop-blur-xl backdrop-saturate-150">
+  <nav class="mx-auto flex h-14 max-w-6xl items-center justify-between px-5" aria-label="Main">
+    <a href="/" class="text-[15px] font-semibold tracking-tight">Jeymarc Sison</a>
+    <div class="flex items-center gap-1 sm:gap-2">
+      <ul class="hidden items-center gap-6 text-[13px] text-muted sm:flex">
+        {nav.map((item) => <li><a class="transition hover:text-ink" href={item.href}>{item.label}</a></li>)}
+      </ul>
+      <a href="/#contact" class="ml-3 hidden rounded-full bg-accent px-3.5 py-1.5 text-[13px] font-medium text-accent-ink sm:inline-block">Contact</a>
+      <ThemeToggle />
+      <!-- Phone menu: native <details>, works without JavaScript. -->
+      <details class="mobile-menu sm:hidden">
+        <summary class="grid size-9 cursor-pointer list-none place-items-center rounded-full hover:bg-card" aria-label="Menu">
+          <Menu size={20} stroke-width={1.6} class="icon-open" aria-hidden="true" />
+          <X size={20} stroke-width={1.6} class="icon-close" aria-hidden="true" />
+        </summary>
+        <ul class="absolute inset-x-0 top-14 grid gap-1 border-b border-line bg-surface px-5 py-4 text-lg shadow-lg">
+          {nav.map((item) => <li><a class="block rounded-xl px-3 py-2.5 hover:bg-card" href={item.href}>{item.label}</a></li>)}
+          <li><a class="block rounded-xl px-3 py-2.5 font-medium text-accent hover:bg-card" href="/#contact">Contact</a></li>
+        </ul>
+      </details>
+    </div>
+  </nav>
+</header>
+
+<style>
+  .mobile-menu summary::-webkit-details-marker { display: none; }
+  .mobile-menu .icon-close { display: none; }
+  .mobile-menu[open] .icon-open { display: none; }
+  .mobile-menu[open] .icon-close { display: block; }
+</style>
+
+<script>
+  // Close the phone menu after choosing a link (same-page anchors otherwise leave it open).
+  for (const menu of document.querySelectorAll<HTMLDetailsElement>('.mobile-menu')) {
+    menu.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) menu.open = false;
+    });
+  }
+</script>

@@ -1,0 +1,30 @@
+---
+import { Footprints, Plane, Laptop, Sparkles } from '@lucide/astro';
+import { interests } from '../../data/sample';
+
+const icons = { running: Footprints, travel: Plane, tech: Laptop, ai: Sparkles } as const;
+const anchors = { running: '#running', travel: '#travel', tech: '#projects', ai: '#blog' } as const;
+---
+
+<section id="interests" class="scroll-mt-14 bg-card py-28 sm:py-40">
+  <div class="mx-auto max-w-6xl px-5">
+    <p class="reveal text-[13px] font-semibold uppercase tracking-[0.16em] text-accent">Interests</p>
+    <h2 class="reveal mt-3 max-w-3xl text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">What keeps me curious.</h2>
+    <div class="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        interests.map((item) => {
+          const Icon = icons[item.key];
+          return (
+            <a href={anchors[item.key]} class="reveal lift group rounded-3xl bg-surface p-7 shadow-[0_1px_0_var(--c-line)]">
+              <span class="grid size-14 place-items-center rounded-2xl bg-accent-soft text-accent transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6">
+                <Icon size={28} stroke-width={1.4} aria-hidden="true" />
+              </span>
+              <h3 class="mt-8 text-xl font-semibold tracking-tight">{item.title}</h3>
+              <p class="mt-2 text-muted">{item.text}</p>
+            </a>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>

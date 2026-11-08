@@ -1,0 +1,50 @@
+---
+import { Headphones, Navigation, MapPin } from '@lucide/astro';
+import Section from '../Section.astro';
+
+const features = [
+  { icon: Navigation, text: 'GPS-guided routes through the city' },
+  { icon: Headphones, text: 'Stories in your ears at every landmark' },
+  { icon: MapPin, text: 'Starting in Zürich' },
+];
+---
+
+<Section
+  id="projects"
+  eyebrow="Projects"
+  title="Things I'm building."
+  lede="Only the ones that are well underway."
+  deepDive={{ href: '/projects', label: 'All projects' }}
+>
+  <article class="reveal grid items-center gap-12 overflow-hidden rounded-[2rem] bg-card p-8 sm:p-14 lg:grid-cols-2">
+    <div>
+      <p class="text-sm font-semibold uppercase tracking-[0.16em] text-accent">iOS app</p>
+      <h3 class="mt-3 text-5xl font-semibold tracking-tight sm:text-6xl">City Run</h3>
+      <p class="mt-5 max-w-md text-lg text-muted">A running-tour app: run a city and hear its stories as you pass its sights.</p>
+      <ul class="mt-8 space-y-4">
+        {
+          features.map(({ icon: Icon, text }) => (
+            <li class="flex items-center gap-3">
+              <span class="grid size-10 place-items-center rounded-xl bg-accent-soft text-accent"><Icon size={20} stroke-width={1.5} aria-hidden="true" /></span>
+              {text}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <!-- Phone mock: real app screenshots replace this. -->
+    <div class="relative mx-auto w-60 sm:w-72" aria-hidden="true">
+      <div class="absolute -inset-10 -z-10 rounded-full bg-[radial-gradient(closest-side,var(--c-glow),transparent)]"></div>
+      <div class="aspect-[9/19.5] rounded-[2.6rem] border-[10px] border-ink/90 bg-surface p-3 shadow-2xl">
+        <div class="mx-auto h-5 w-20 rounded-full bg-ink/90"></div>
+        <svg viewBox="0 0 200 330" class="mt-3 w-full">
+          <rect width="200" height="330" rx="18" fill="var(--c-accent-soft)" />
+          <path d="M30 290 C60 230 40 190 90 170 S160 120 140 70 S90 40 110 30" fill="none" stroke="var(--c-accent)" stroke-width="5" stroke-linecap="round" />
+          <circle cx="90" cy="170" r="7" fill="var(--c-surface)" stroke="var(--c-accent)" stroke-width="3" />
+          <circle cx="140" cy="70" r="7" fill="var(--c-surface)" stroke="var(--c-accent)" stroke-width="3" />
+          <circle cx="30" cy="290" r="9" fill="var(--c-accent)" />
+        </svg>
+      </div>
+    </div>
+  </article>
+</Section>

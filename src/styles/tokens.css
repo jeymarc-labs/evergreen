@@ -1,0 +1,83 @@
+/* Design tokens: the only place colours, type and motion values are defined.
+   Draft values; final palette is approved in the Phase 1 mockup.
+   Colours are per-theme CSS variables, so components use one class (e.g. text-accent)
+   and never need a dark: variant for colour. */
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  color-scheme: light;
+  --c-surface: #ffffff;
+  --c-ink: #111513;
+  --c-muted: #5b6660;
+  --c-accent: #0f7a4f; /* forest/emerald */
+  --c-accent-ink: #ffffff; /* text on accent */
+  --c-accent-soft: #e7f4ec; /* tinted panels */
+  --c-card: #f5f7f6;
+  --c-line: #e1e7e3;
+  --c-glow: rgb(16 122 79 / 0.18);
+  --c-error: #b42318;
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --c-surface: #0b0f0d;
+  --c-ink: #eef3f0;
+  --c-muted: #9aa7a0;
+  --c-accent: #3ccf8e;
+  --c-accent-ink: #04140c;
+  --c-accent-soft: #0f2a1d;
+  --c-card: #131916;
+  --c-line: #223028;
+  --c-glow: rgb(60 207 142 / 0.16);
+  --c-error: #ff8a80;
+}
+
+/* Without JavaScript there is no data-theme: follow the system setting.
+   Keep these values identical to [data-theme="dark"] above. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --c-surface: #0b0f0d;
+    --c-ink: #eef3f0;
+    --c-muted: #9aa7a0;
+    --c-accent: #3ccf8e;
+    --c-accent-ink: #04140c;
+    --c-accent-soft: #0f2a1d;
+    --c-card: #131916;
+    --c-line: #223028;
+    --c-glow: rgb(60 207 142 / 0.16);
+    --c-error: #ff8a80;
+  }
+}
+
+@theme inline {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --color-surface: var(--c-surface);
+  --color-ink: var(--c-ink);
+  --color-muted: var(--c-muted);
+  --color-accent: var(--c-accent);
+  --color-accent-ink: var(--c-accent-ink);
+  --color-accent-soft: var(--c-accent-soft);
+  --color-card: var(--c-card);
+  --color-line: var(--c-line);
+  --color-error: var(--c-error);
+}
+
+/* One visible focus style everywhere (keyboard only). */
+:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

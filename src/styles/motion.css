@@ -1,0 +1,70 @@
+/* Scroll motion. Native CSS scroll-driven animations (Safari 26+, Chrome); browsers without
+   support, and anyone with reduced motion, simply see the content in place. */
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* Content glides up and in as it enters the viewport. */
+    .reveal {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+
+    /* Text fills from muted to full ink as you read down (Apple-style). */
+    .scrub-text {
+      background: linear-gradient(90deg, var(--c-ink) 50%, color-mix(in oklab, var(--c-ink) 40%, transparent) 50%);
+      background-size: 200% 100%;
+      background-position: 100% 0;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: scrub-fill linear both;
+      animation-timeline: view();
+      animation-range: entry 40% cover 55%;
+    }
+
+    /* Hero: portrait drifts and grows slightly, intro fades as the page scrolls away. */
+    .hero-portrait {
+      animation: hero-drift linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+    .hero-copy {
+      animation: hero-fade linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 70vh;
+    }
+
+    /* Big numbers count in with a gentle scale. */
+    .pop {
+      animation: pop-in linear both;
+      animation-timeline: view();
+      animation-range: entry 10% entry 80%;
+    }
+  }
+
+  .lift { transition: transform 0.5s var(--ease-spring), box-shadow 0.5s var(--ease-spring); }
+  .lift:hover { transform: translateY(-4px); }
+
+  .pulse::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 9999px;
+    border: 2px solid var(--c-accent);
+    animation: pulse 2.4s var(--ease-spring) 3; /* a few pulses, then still (WCAG 2.2.2) */
+    opacity: 0;
+  }
+}
+
+@keyframes reveal-in { from { opacity: 0; transform: translateY(48px) scale(0.98); } }
+@keyframes scrub-fill { to { background-position: 0 0; } }
+@keyframes hero-drift { to { transform: translateY(14%) scale(1.06); } }
+@keyframes hero-fade { to { opacity: 0; transform: translateY(-40px); visibility: hidden; } }
+@keyframes pop-in { from { opacity: 0; transform: scale(0.85); } }
+@keyframes pulse { 0% { opacity: 0.7; transform: scale(0.7); } 100% { opacity: 0; transform: scale(1.8); } }
+
+/* Windows high-contrast: never hide text behind background-clip. */
+@media (forced-colors: active) {
+  .scrub-text { color: CanvasText; background: none; animation: none; }
+}

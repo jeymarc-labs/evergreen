@@ -1,0 +1,28 @@
+---
+import { ArrowUpRight, Briefcase, Layers, Users } from '@lucide/astro';
+import Section from '../Section.astro';
+import { about } from '../../data/sample';
+
+const roles = [
+  { icon: Briefcase, title: 'Finance', text: 'My whole career, at two global banks.' },
+  { icon: Users, title: 'Consultant', text: 'Helping teams find the problem worth solving.' },
+  { icon: Layers, title: 'Product manager', text: 'Turning that into something people use.' },
+];
+---
+
+<Section id="about" eyebrow="About" title="Numbers, products and people." lede={about.line}>
+  <div class="grid gap-5 sm:grid-cols-3">
+    {
+      roles.map(({ icon: Icon, title, text }) => (
+        <div class="reveal lift rounded-3xl border border-line bg-card p-7">
+          <Icon size={30} stroke-width={1.4} class="text-accent" aria-hidden="true" />
+          <h3 class="mt-6 text-xl font-semibold tracking-tight">{title}</h3>
+          <p class="mt-2 text-muted">{text}</p>
+        </div>
+      ))
+    }
+  </div>
+  <a href={about.linkedin} class="reveal mt-10 inline-flex items-center gap-2 font-medium text-accent">
+    More on LinkedIn <ArrowUpRight size={18} stroke-width={1.8} aria-hidden="true" />
+  </a>
+</Section>

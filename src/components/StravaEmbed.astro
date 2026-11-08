@@ -1,0 +1,40 @@
+---
+// Click-to-load placeholder for an official Strava activity embed. Nothing loads from Strava
+// until the visitor clicks. The real embed code, and Strava's entry in the privacy notice,
+// arrive in Phase 3; for now the button only shows what would happen.
+import { Play } from '@lucide/astro';
+
+interface Props {
+  title: string;
+  meta: string;
+}
+const { title, meta } = Astro.props;
+---
+
+<div class="reveal relative overflow-hidden rounded-3xl border border-line bg-surface">
+  <svg viewBox="0 0 600 260" class="h-56 w-full sm:h-64" aria-hidden="true">
+    <defs>
+      <pattern id="strava-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+        <path d="M24 0H0V24" fill="none" stroke="var(--c-line)" stroke-width="1" />
+      </pattern>
+    </defs>
+    <rect width="600" height="260" fill="url(#strava-grid)" />
+    <path
+      d="M60 200 C110 120 150 210 210 150 S300 60 350 110 S440 210 500 120 S560 70 560 70"
+      fill="none"
+      stroke="var(--c-accent)"
+      stroke-width="4"
+      stroke-linecap="round"
+    />
+  </svg>
+  <div class="flex flex-wrap items-center justify-between gap-4 border-t border-line p-6">
+    <div>
+      <p class="font-semibold">{title}</p>
+      <p class="text-sm text-muted">{meta}</p>
+    </div>
+    <button type="button" class="inline-flex items-center gap-2 rounded-full border border-line px-4 py-2 text-sm font-medium transition hover:bg-card">
+      <Play size={16} stroke-width={1.8} aria-hidden="true" /> Load from Strava
+    </button>
+  </div>
+  <p class="px-6 pb-5 text-xs text-muted">Loads Strava's embed only when you click.</p>
+</div>

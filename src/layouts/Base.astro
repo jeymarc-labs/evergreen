@@ -1,0 +1,57 @@
+---
+import '../styles/tokens.css';
+import '../styles/motion.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { SAMPLE_CONTENT } from '../data/sample';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Jeymarc Sison',
+  description = 'Jeymarc Sison: running, travel, tech and learning AI in public.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#0f7a4f" />
+    <title>{title}</title>
+    <script is:inline>
+      // Set the theme before paint. Stored "light" or "dark" wins; anything else (or blocked
+      // storage, e.g. some private modes) follows the system setting.
+      (() => {
+        let saved = null;
+        try {
+          saved = localStorage.getItem('theme');
+        } catch {}
+        const dark =
+          saved === 'dark' || (saved !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      })();
+    </script>
+  </head>
+  <body class="bg-surface text-ink font-sans antialiased">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-ink">Skip to content</a>
+    <SiteHeader />
+    <main id="main">
+      <slot />
+    </main>
+    <SiteFooter />
+    {
+      SAMPLE_CONTENT && (
+        <p class="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 rounded-full bg-ink px-4 py-1.5 text-xs font-medium text-surface shadow-lg">
+          Preview · sample content
+        </p>
+      )
+    }
+  </body>
+</html>

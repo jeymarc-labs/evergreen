@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "evergreen-dev",
+      "runtimeExecutable": "/Users/jeymarcsison/.nvm/versions/node/v24.15.0/bin/npx",
+      "runtimeArgs": ["astro", "dev", "--port", "4321"],
+      "env": { "PATH": "/Users/jeymarcsison/.nvm/versions/node/v24.15.0/bin:/usr/bin:/bin" },
+      "port": 4321
+    }
+  ]
+}
