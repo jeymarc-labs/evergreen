@@ -9,6 +9,7 @@ import { DISTANCES } from './src/lib/running';
 // Images live under src/assets so Astro optimises them (and strips metadata from what it serves).
 // publicPath is relative to the content file, so Astro's image() schema can resolve it.
 const postImages = { directory: 'src/assets/posts', publicPath: '../../assets/posts/' };
+const instagramImages = { directory: 'src/assets/instagram', publicPath: '../../assets/instagram/' };
 const PHOTO_ADVICE =
   'JPEG or PNG. Turn off location first (iPhone share sheet › Options › Location off): the repo is public, and an automatic clean-up runs after upload but the original stays in its history.';
 
@@ -129,6 +130,19 @@ export default config({
             when: fields.text({ label: 'Year(s) (optional)', description: 'e.g. “2014 · 2025”. For planned races, a public race date tells people where you’ll be.', validation: { length: { max: 40 } } }),
           }),
           { label: 'World Marathon Majors', itemLabel: (p) => `${p.fields.city.value || 'Major'}: ${p.fields.status.value}` },
+        ),
+        instagram: fields.array(
+          fields.object({
+            photo: fields.image({ label: 'Photo', description: PHOTO_ADVICE, ...instagramImages, validation: { isRequired: true } }),
+            url: fields.url({ label: 'Link to the post', description: 'From the post: ⋯ › Copy link, e.g. https://www.instagram.com/p/…', validation: { isRequired: true } }),
+            alt: fields.text({ label: 'What the photo shows', description: 'For screen readers, e.g. “Crossing the Chicago finish line”.', validation: { length: { min: 1, max: 150 } } }),
+          }),
+          {
+            label: 'Instagram picks',
+            description: 'Up to 4 of your own posts, shown under “From @jeymarc.logs” in this order. Upload your own copy of the photo; nothing loads from Instagram.',
+            itemLabel: (p) => p.fields.alt.value || 'Post',
+            validation: { length: { max: 4 } },
+          },
         ),
       },
     }),

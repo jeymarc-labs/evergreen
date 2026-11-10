@@ -2,6 +2,16 @@
 
 Newest first. One line of why each.
 
+## 2026-11-10 — Instagram live feed: Shield STOP
+
+- **An automatic feed of @jeymarc.logs is blocked by Meta's Developer Policies §6 (Instagram
+  Platform) item 2:** no using the platform "to simply display User Content" without Meta's prior
+  permission, and there's no published way to get it. The 2026-11-08 pass checked *access*
+  (Standard Access, no review: still true), not *permitted use*. CLEAR alternative: hand-picked
+  posts (own photos uploaded in the admin, each linking to its post). **Jeymarc chose
+  hand-picked posts:** "Instagram picks" under Running in the admin (up to 4: photo, post link,
+  alt text). No Meta app, token or cron; the privacy notice says the photos are local copies.
+
 ## 2026-11-09 — Running results and site settings in the admin
 
 - **Races and the Majors are edited under "Running" in /keystatic** (`settings/running.yaml`),
@@ -162,7 +172,7 @@ Newest first. One line of why each.
   built images, not from the originals in a public repo). `check.sh` gets a GPS-metadata check.
 - **Privacy notice page is required** (Phase 1): it names OpenFreeMap, Vercel Analytics, Resend
   (keeps mail 30 days), Cloudflare Turnstile, and Strava/Instagram embeds (click-to-load).
-- **Instagram:** a creator account plus Standard Access is enough, with no app review. The token
+- **Instagram:** (use blocked, see 2026-11-10) a creator account plus Standard Access is enough, with no app review. The token
   lasts 60 days and is refreshed by a daily Vercel cron. Hand-copied embeds need no app and go
   behind click-to-load.
 - **Map:** MapLibre (BSD-3) + OpenFreeMap: no key, no cookies, no view limit, attribution visible,

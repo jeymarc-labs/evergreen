@@ -71,7 +71,7 @@ Brief: `BRIEF.md`. Phases: `ROADMAP.md`. Why: `DECISIONS.md`.
 - Register the domain (.ch or .com); then change `site` in astro.config.mjs.
 - Switch on Web Analytics in the Vercel dashboard.
 - Portrait photo; years in finance, principles, beyond-work and interest texts (drafts now).
-- Optionally: switch jeymarc.logs Instagram to a creator account.
+- Pick up to 4 Instagram posts under Running › Instagram picks in the admin (live feed is out: Shield STOP).
 
 ## Accounts
 

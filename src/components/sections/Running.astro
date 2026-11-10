@@ -1,11 +1,12 @@
 ---
+import { Image } from 'astro:assets';
 import { Medal, Timer, Star } from '@lucide/astro';
 import Section from '../Section.astro';
 import { getRunning } from '../../lib/content';
 import { formatDate } from '../../lib/blog';
 import { latestRace as findLatest, majorsProgress, personalBests } from '../../lib/running';
 
-const { races, majors } = await getRunning();
+const { races, majors, instagram } = await getRunning();
 const runningStats = personalBests(races);
 const latestRace = findLatest(races);
 
@@ -96,22 +97,24 @@ const statusLabel = { done: 'Done', planned: 'Planned', open: 'Someday' } as con
   </div>
   )}
 
-  <!-- Instagram -->
+  <!-- Instagram: posts Jeymarc picks in the admin (his own photo copies; nothing loads from Instagram) -->
   <div class="mt-28">
     <div class="reveal flex flex-wrap items-end justify-between gap-4">
       <h3 class="text-3xl font-semibold tracking-tight sm:text-4xl">From @jeymarc.logs</h3>
       <a href="https://www.instagram.com/jeymarc.logs/" class="font-medium text-accent">Follow on Instagram</a>
     </div>
-    <div class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4 stagger">
-      {
-        [0, 1, 2, 3].map((i) => (
-          <div
-            class="reveal lift aspect-square rounded-2xl"
-            style={`background: linear-gradient(${135 + i * 40}deg, var(--c-accent-soft), color-mix(in oklab, var(--c-accent) ${30 + i * 12}%, var(--c-card)))`}
-            aria-hidden="true"
-          />
-        ))
-      }
-    </div>
+    {
+      instagram.length > 0 && (
+        <ul class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4 stagger">
+          {instagram.map((post) => (
+            <li class="reveal">
+              <a href={post.url} class="lift block overflow-hidden rounded-2xl" aria-label={`${post.alt} (opens on Instagram)`}>
+                <Image src={post.image} alt={post.alt} widths={[240, 400, 640]} sizes="(min-width: 640px) 25vw, 50vw" class="aspect-square w-full object-cover" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
   </div>
 </Section>

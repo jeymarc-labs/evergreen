@@ -27,7 +27,7 @@ next one starts.
 - Strava profile link only (no Strava embeds: dropped 2026-11-08, Jeymarc).
 - Run reports (races and special runs) with photos.
 - Race results board, World Marathon Majors tracker.
-- Instagram: hand-picked posts now, live feed once jeymarc.logs is a creator account.
+- Instagram: hand-picked posts (Running › Instagram picks). No live feed: Meta forbids it (Shield STOP 2026-11-10).
 
 ## Phase 4 — Travel
 - Interactive world map, our own SVG (light/dark), a pin per city; cities edited in the admin

@@ -1,10 +1,11 @@
 // Content access for pages. Everything that reads posts or the Keystatic singletons goes through
 // here, so components never touch files or collections directly.
+import type { ImageMetadata } from 'astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { createReader } from '@keystatic/core/reader';
 import keystaticConfig from '../../keystatic.config';
 import { visiblePosts, readingMinutes } from './blog';
-import { isSafeHref } from './links';
+import { isInstagramPost, isSafeHref } from './links';
 import { languageRows } from './languages';
 import { timeToSeconds, type Distance, type MajorStatus, type Race } from './running';
 import { mergeNearby, resolvePlace, type CityLookup, type Place } from './places';
@@ -59,6 +60,14 @@ async function readPlaces(): Promise<Place[]> {
   return kept;
 }
 
+// Photos uploaded under "Instagram picks", keyed by their path inside src/assets/instagram, so
+// Astro optimises them like any other image. Phones often name files IMG_1234.JPG.
+const INSTAGRAM_PHOTOS = Object.fromEntries(
+  Object.entries(
+    import.meta.glob<{ default: ImageMetadata }>('../assets/instagram/**/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}', { eager: true }),
+  ).map(([path, mod]) => [path.split('/assets/instagram/')[1], mod.default]),
+);
+
 export async function getRunning() {
   const data = await reader.singletons.running.read();
   if (!data) throw new Error('Missing src/content/settings/running.yaml (edit "Running" in /keystatic)');
@@ -66,7 +75,14 @@ export async function getRunning() {
   for (const r of races) {
     if (timeToSeconds(r.time) === null) throw new Error(`Running: "${r.name}" has a finish time that isn't h:mm:ss (${r.time}).`);
   }
-  return { races, majors: data.majors.map((m) => ({ ...m, status: m.status as MajorStatus, when: m.when ?? '' })) };
+  const instagram = data.instagram.map((post) => {
+    if (!isInstagramPost(post.url)) throw new Error(`Running › Instagram picks: "${post.alt}" needs the post's link, https://www.instagram.com/p/… (${post.url}).`);
+    const file = String(post.photo ?? '').split('assets/instagram/').pop() ?? '';
+    const image = INSTAGRAM_PHOTOS[file];
+    if (!image) throw new Error(`Running › Instagram picks: the photo for "${post.alt}" is missing (${file || 'none'}).`);
+    return { image, url: post.url, alt: post.alt };
+  });
+  return { races, majors: data.majors.map((m) => ({ ...m, status: m.status as MajorStatus, when: m.when ?? '' })), instagram };
 }
 
 export async function getSite() {

@@ -30,3 +30,8 @@ export function brandFor(url: string): Brand | null {
   if (host === 'strava.com') return 'strava';
   return null;
 }
+
+/** A link to one post or reel on Instagram (what "Copy link" gives), nothing else. */
+export function isInstagramPost(url: unknown): url is string {
+  return typeof url === 'string' && /^https:\/\/(www\.)?instagram\.com\/(p|reel)\/[\w-]+\/?(\?[\w=&.-]*)?$/.test(url);
+}
